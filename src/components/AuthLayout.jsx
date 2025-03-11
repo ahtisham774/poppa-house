@@ -1,0 +1,19 @@
+const AuthLayout = ({ title, subTitle, children }) => {
+  return (
+    <div className='flex flex-col-reverse lg:flex-row min-h-screen'>
+      <div className='lg:w-1/2 p-8 lg:p-24 flex flex-col gap-6 justify-center'>
+        <h1 className='text-3xl lg:text-5xl font-bold text-[#1a1a4b] mb-2'>{title}</h1>
+        {subTitle && <p className='text-gray-600 mb-8'>{subTitle}</p>}
+        {children}
+      </div>
+      <div
+        className='lg:w-1/2 bg-cover min-h-screen bg-center lg:rounded-[20px_0_0_20px]'
+        style={{
+          backgroundImage: `url(/assets/auth.jpg)`
+        }}
+      ></div>
+    </div>
+  )
+}
+
+export default AuthLayout
