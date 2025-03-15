@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Form, Input, Button } from 'antd'
 import AuthLayout from '../components/AuthLayout'
-import { FcGoogle } from 'react-icons/fc'
-import { FaFacebook } from 'react-icons/fa'
+
 import { css } from './register'
 import SocialLogin from '../components/SocialLogin'
 
@@ -15,6 +14,8 @@ const Login = () => {
     // Handle form submission
     console.log('Success:', values)
     setLoading(false)
+    localStorage.setItem('userLoggedIn', 'true')
+    window.location.href = '/'
   }
 
   return (

@@ -82,6 +82,8 @@
 
 html{
   scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) hsl(var(--background));
 }
 
 @layer base {
@@ -120,10 +122,10 @@ body {
 
 .dp .ant-select-selector, .dp .ant-input-outlined,
 .dp .ant-input-group-addon,
-.dp .ant-input-outlined:focus-within,
 .dp .ant-input-password ,
 .dp.ant-input-outlined.ant-input-status-error,
 .dp.ant-input-outlined.ant-input-status-success
+.dp
 {
   border:none !important;
   outline: none !important;
@@ -133,12 +135,17 @@ body {
 }
 
 .dp .ant-input-outlined,
-.dp .ant-input-group-addon{
+.dp .ant-input-group-addon,
+.ant-input-affix-wrapper-focused{
+  box-shadow: none !important;
+  border: none !important;
   border-radius: 0;
-  border-bottom: 1px solid #d9d9d9 !important;
+  border-bottom: 2px solid #adadad !important;
   margin-top: .5rem;
 }
-
+.ant-input-affix-wrapper-focused{
+  margin: 0 !important;
+}
 
 .dp.ant-input-outlined.ant-input-status-error{
   border-bottom: 1px solid #ff4d4f !important;
@@ -240,4 +247,24 @@ body {
 
 .hide_scrollbar::-webkit-scrollbar{
   display: none;
+}
+
+.radio .ant-radio-button-wrapper::before{
+  display: none;
+}
+
+.radio .ant-radio-button-wrapper{
+  width: fit-content;
+  flex: none;
+}
+
+.radio .ant-radio-button-wrapper:hover,
+.radio .ant-radio-button-wrapper:active,
+.radio .ant-radio-button-wrapper:focus-within,
+.radio .ant-radio-button-wrapper-checked
+{
+  background: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+  border-color: hsl(var(--accent)) !important;
+
 }

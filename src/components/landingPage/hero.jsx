@@ -2,25 +2,24 @@ import { Input, Button } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import Filter from '../svg/filter'
 
-export function Hero ({ onFilterClick }) {
+export function Hero ({ bg, title, description, onFilterClick }) {
   return (
     <section
       className='relative min-h-screen py-20 flex flex-col items-center justify-center bg-cover bg-center'
       style={{
-        backgroundImage: "url('/assets/hero_bg.png')"
+        backgroundImage: `url('${bg}')`
       }}
     >
       <div className='absolute inset-0 ' />
       <div className='container relative z-10 text-center text-foreground'>
-        <h1 className='text-4xl md:text-6xl font-medium mb-4'>
-          Find Your Dream Home
-        </h1>
-        <p className='text-base  font-normal mb-8'>
-          Discover the perfect place to live, invest, or rent with verified
-          listings and expert guidance.
-        </p>
+        <h1 className='text-4xl md:text-6xl font-medium mb-4'>{title}</h1>
+        <p className='text-base  font-normal mb-8'>{description}</p>
 
         <div className='max-w-3xl mx-auto'>
+        <div className='flex justify-center mb-4 space-x-8 font-medium'>
+            <button className='text-primary hover:text-black hover:underline hover:underline-offset-8'>Sale/Buy</button>
+            <button className='text-primary hover:text-black hover:underline hover:underline-offset-8'>Rent</button>
+          </div>
           <div className='flex items-center flex-col justify-center sm:flex-row gap-5 bg-white rounded-lg p-4 px-6'>
             <Input
               placeholder='Search by Location, Price, or Property Type...'
@@ -46,10 +45,7 @@ export function Hero ({ onFilterClick }) {
             </div>
           </div>
 
-          <div className='flex justify-center mt-4 space-x-4'>
-            <button className='text-white hover:text-accent'>Sale/Buy</button>
-            <button className='text-white hover:text-accent'>Rent</button>
-          </div>
+          
         </div>
       </div>
     </section>

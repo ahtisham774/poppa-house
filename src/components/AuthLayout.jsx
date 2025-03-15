@@ -1,6 +1,16 @@
+import { MdArrowBack } from "react-icons/md"
+import { Link } from "react-router-dom"
+
 const AuthLayout = ({ title, subTitle, children }) => {
   return (
     <div className='flex flex-col-reverse lg:flex-row min-h-screen'>
+       <Link
+        to='/'
+        className='flex absolute top-5 left-5 items-center text-primary mb-6'
+      >
+        <MdArrowBack classID='text-2xl' />{' '}
+        <span className='ml-2 font-medium text-2xl'>Go Back</span>
+      </Link>
       <div className='lg:w-1/2 p-8 lg:p-24 flex flex-col gap-6 justify-center'>
         <h1 className='text-3xl lg:text-5xl font-bold text-[#1a1a4b] mb-2'>{title}</h1>
         {subTitle && <p className='text-gray-600 mb-8'>{subTitle}</p>}

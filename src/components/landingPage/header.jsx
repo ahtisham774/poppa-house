@@ -1,39 +1,82 @@
-import { useState } from 'react'
-import { Button, Drawer } from "antd"
-import { Link, useNavigate } from "react-router-dom"
-import { MenuOutlined, CloseOutlined } from '@ant-design/icons'
+import { useState, useEffect } from 'react'
+import { Button, Drawer, Dropdown } from 'antd'
+import { Link, useNavigate } from 'react-router-dom'
+import { MenuOutlined, CloseOutlined, UserOutlined } from '@ant-design/icons'
+import { RxHamburgerMenu } from 'react-icons/rx'
+import { user } from '../../data'
 
-export function Header() {
+export function Header () {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+
+  // Simulate checking if user is logged in
+  useEffect(() => {
+    // This could be replaced with actual authentication check
+    const userLoggedIn = localStorage.getItem('userLoggedIn') === 'true'
+    setIsLoggedIn(userLoggedIn)
+  }, [])
 
   const toggleMenu = () => setMenuOpen(!menuOpen)
   const navigate = useNavigate()
 
   const navLinks = [
-    { path: "/services", text: "Services" },
-    { path: "/properties", text: "Properties Hub" },
-    { path: "/blog", text: "Blog & Market Insights" },
-    { path: "/about", text: "About Us" },
-    { path: "/contact", text: "Contact Us" },
+    { path: '/services', text: 'Services' },
+    { path: '/properties-hub', text: 'Properties Hub' },
+    { path: '/blogs', text: 'Blog & Market Insights' },
+    { path: '/about', text: 'About Us' },
+    { path: '/contact', text: 'Contact Us' }
+  ]
+
+  const dropdownItems = [
+    { key: 'account', label: 'Account', onClick: () => navigate('/account') },
+    { key: 'chat', label: 'Chat', onClick: () => navigate('/chat') },
+    {
+      key: 'favourites',
+      label: 'Favourites',
+      onClick: () => navigate('/favourites')
+    },
+    {
+      key: 'logout',
+      label: 'Log Out',
+      onClick: () => {
+        localStorage.removeItem('userLoggedIn')
+        setIsLoggedIn(false)
+        navigate('/')
+      }
+    }
   ]
 
   const gotoCareers = () => navigate('/careers')
   const gotoLogin = () => navigate('/login')
 
+  // For demo purposes
+  const handleLogin = () => {
+    gotoLogin()
+  }
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen)
+  }
+
   return (
-    <header className="border-b border-b-[#B8B8B8]">
-      <div className="container mx-auto px-4 h-20 lg:px-12 flex items-center justify-between">
-        <Link to="/" className="flex items-center">
-          <img src="/assets/logo.png" alt="Asare Viewing" className="h-12 -mt-2" />
+    <header className='border-b border-b-[#B8B8B8]'>
+      <div className='container mx-auto px-4 h-20 lg:px-12 flex items-center justify-between'>
+        <Link to='/' className='flex items-center'>
+          <img
+            src='/assets/logo.png'
+            alt='Proppa House'
+            className='h-12 -mt-2'
+          />
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          {navLinks.map((link) => (
+        <nav className='hidden md:flex items-center space-x-8'>
+          {navLinks.map(link => (
             <Link
               key={link.path}
               to={link.path}
-              className="text-sm font-medium hover:text-secondary active:text-secondary focus-within:text-secondary"
+              className='text-sm font-medium hover:text-secondary active:text-secondary focus-within:text-secondary'
             >
               {link.text}
             </Link>
@@ -41,22 +84,67 @@ export function Header() {
         </nav>
 
         {/* Mobile Menu Button */}
-        <button
-          className="md:hidden p-2 text-2xl"
-          onClick={toggleMenu}
-          aria-label="Open menu"
-        >
-          <MenuOutlined />
-        </button>
+        <div className='md:hidden flex items-center gap-2'>
+          {isLoggedIn && (
+            <div className='rounded-full bg-accent w-8 h-8 flex items-center justify-center text-black font-medium text-xl'>
+            {user.firstName[0]}
+          </div>
+          )}
+          <button
+            className='p-2 text-2xl'
+            onClick={toggleMenu}
+            aria-label='Open menu'
+          >
+            <RxHamburgerMenu size={25} />
+          </button>
+        </div>
 
         {/* Desktop Buttons */}
-        <div className="hidden md:flex items-center space-x-4">
-          <Button onClick={gotoCareers} className="bg-secondary text-base font-medium py-4 rounded-lg hover:!bg-secondary hover:!text-foreground/30 text-foreground">
+        <div className='hidden md:flex items-center space-x-4'>
+          <Button
+            onClick={gotoCareers}
+            className='bg-secondary text-base font-medium py-4 rounded-lg hover:!bg-secondary hover:!text-foreground/30 text-foreground'
+          >
             Careers
           </Button>
-          <Button onClick={gotoLogin} className="bg-secondary hover:!bg-secondary text-base font-medium py-4 rounded-lg hover:!text-foreground/30 text-foreground">
-            Login/Register
-          </Button>
+
+          {isLoggedIn ? (
+            <div className='relative'>
+              <div
+                onClick={toggleDropdown}
+                className='cursor-pointer flex items-center gap-2 border border-[#8D8D8D] rounded-full px-4 py-0.5'
+              >
+                <RxHamburgerMenu size={25} />
+                <div className='rounded-full bg-accent w-8 h-8 flex items-center justify-center text-black font-medium text-xl'>
+                {user.firstName[0]}
+                </div>
+              </div>
+
+              {/* Desktop dropdown menu */}
+              {dropdownOpen && (
+                <div className='absolute right-0 mt-2 w-48 bg-white rounded-xl border border-[#b1b1b1] shadow-lg py-1 z-50'>
+                  {dropdownItems.map((item, i) => (
+                    <button
+                      key={item.key}
+                      onClick={item.onClick}
+                      className={`block w-full ${
+                        i < dropdownItems?.length - 1 ? 'border-b-2' : ''
+                      } text-left px-4 py-2 text-gray-800 hover:bg-gray-100`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <Button
+              onClick={handleLogin} /* Changed to handleLogin for demo */
+              className='bg-secondary hover:!bg-secondary text-base font-medium py-4 rounded-lg hover:!text-foreground/30 text-foreground'
+            >
+              Login/Register
+            </Button>
+          )}
         </div>
 
         {/* Mobile Sidebar */}
@@ -65,37 +153,59 @@ export function Header() {
             menuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
-          <div className="p-4 flex justify-between">
-          <Link to="/" className="flex items-center">
-          <img src="/assets/logo.png" alt="Asare Viewing" className="h-12" />
-        </Link>
+          <div className='p-4 flex justify-between'>
+            <Link to='/' className='flex items-center'>
+              <img src='/assets/logo.png' alt='Proppa House' className='h-12' />
+            </Link>
             <button
               onClick={toggleMenu}
-              className="p-2 text-xl"
-              aria-label="Close menu"
+              className='p-2 text-xl'
+              aria-label='Close menu'
             >
               <CloseOutlined />
             </button>
           </div>
-          
-          <nav className="flex flex-col p-4 space-y-4">
-            {navLinks.map((link) => (
+
+          <nav className='flex flex-col p-4 space-y-4'>
+            {navLinks.map(link => (
               <Link
                 key={link.path}
                 to={link.path}
-                className="text-sm font-medium hover:text-secondary"
+                className='text-sm font-medium hover:text-secondary'
                 onClick={() => setMenuOpen(false)}
               >
                 {link.text}
               </Link>
             ))}
-            <div className="flex flex-col space-y-4 mt-8">
-              <Button  onClick={gotoCareers} className="bg-secondary text-base font-medium py-4 rounded-lg">
+            {isLoggedIn &&
+              dropdownItems.map(item => (
+                <button
+                  key={item.key}
+                  onClick={() => {
+                    item.onClick()
+                    setMenuOpen(false)
+                  }}
+                  className='text-sm text-start font-medium hover:text-secondary'
+                >
+                  {item.label}
+                </button>
+              ))}
+            <div className='flex flex-col space-y-4 mt-8'>
+              <Button
+                onClick={gotoCareers}
+                className='bg-secondary text-base font-medium py-4 rounded-lg'
+              >
                 Careers
               </Button>
-              <Button onClick={gotoLogin} className="bg-secondary text-base font-medium py-4 rounded-lg">
-                Login/Register
-              </Button>
+
+              {!isLoggedIn && (
+                <Button
+                  onClick={handleLogin} /* Changed to handleLogin for demo */
+                  className='bg-secondary text-base font-medium py-4 rounded-lg'
+                >
+                  Login/Register
+                </Button>
+              )}
             </div>
           </nav>
         </div>
@@ -103,8 +213,16 @@ export function Header() {
         {/* Backdrop overlay */}
         {menuOpen && (
           <div
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            className='fixed inset-0 bg-black/50 z-40 md:hidden'
             onClick={toggleMenu}
+          />
+        )}
+
+        {/* Backdrop for dropdown */}
+        {dropdownOpen && (
+          <div
+            className='fixed inset-0 z-40 hidden md:block'
+            onClick={() => setDropdownOpen(false)}
           />
         )}
       </div>

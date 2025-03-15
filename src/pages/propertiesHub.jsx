@@ -1,21 +1,18 @@
 import { useState } from 'react'
-import { Layout } from '../components/landingPage/layout'
 import { Hero } from '../components/landingPage/hero'
 import { FilterModal } from '../components/landingPage/filter-modal'
+import Listing from '../components/properties/listing'
 import { FeaturedListings } from '../components/landingPage/featured-listings'
-import { WhyChooseUs } from '../components/landingPage/why-choose-us'
-import { Testimonials } from '../components/landingPage/testimonials'
-import { FAQ } from '../components/landingPage/faq'
-import { ContactSection } from '../components/landingPage/contact-section'
-import ReviewSection from '../components/landingPage/reviewSection'
+import Map from '../components/common/map'
+import WhyListing from '../components/properties/whyListing'
+import RegisterNow from '../components/properties/registerNow'
 
-export default function LandingPage () {
+const PropertiesHub = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const bg = '/assets/hero_bg.png'
-  const title = 'Find Your Dream Home'
+  const bg = '/assets/properties_hub_bg.png'
+  const title = 'Properties Hub'
   const description =
     'Discover the perfect place to live, invest, or rent with verified listings and expert guidance.'
-
   return (
     <>
       <Hero
@@ -25,12 +22,15 @@ export default function LandingPage () {
         onFilterClick={() => setIsFilterOpen(true)}
       />
       {isFilterOpen && <FilterModal onClose={() => setIsFilterOpen(false)} />}
+      <Listing />
       <FeaturedListings />
-      <WhyChooseUs />
-      <Testimonials />
-      <FAQ />
-      <ReviewSection />
-      <ContactSection />
+      <div className='mb-24'>
+        <Map />
+      </div>
+      <WhyListing />
+      <RegisterNow />
     </>
   )
 }
+
+export default PropertiesHub

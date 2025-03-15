@@ -7,42 +7,37 @@ import {
   Select,
   DatePicker,
   Collapse,
-  Tabs,
   Radio
 } from 'antd'
 import {
-  HeartOutlined,
   EnvironmentOutlined,
   AreaChartOutlined,
-  DownOutlined,
-  PlusOutlined,
-  MinusOutlined,
   VideoCameraOutlined,
   PictureOutlined,
-  CalendarOutlined,
-  HeartFilled
+  CalendarOutlined
 } from '@ant-design/icons'
 import { FaBath, FaBed, FaCar } from 'react-icons/fa'
 import ArrowDown from '../components/svg/arrowDown'
 import { css } from './register'
 import Like from '../components/common/like'
+import MapUrl from '../components/common/mapUrl'
 
 // Custom icons to match the design
-const BedIcon = () => (
+export const BedIcon = ({ className }) => (
   <span className='text-secondary'>
-    <FaBed size={25} />
+    <FaBed size={25} className={className} />
   </span>
 )
 
-const BathIcon = () => (
+export const BathIcon = ({ className }) => (
   <span className='text-secondary'>
-    <FaBath size={25} />
+    <FaBath size={25} className={className} />
   </span>
 )
 
-const GarageIcon = () => (
+export const GarageIcon = ({ className }) => (
   <span className='text-secondary'>
-    <FaCar size={25} />
+    <FaCar size={25} className={className} />
   </span>
 )
 
@@ -66,23 +61,14 @@ const CafeIcon = () => (
 
 const { Panel } = Collapse
 const { Option } = Select
-const { TabPane } = Tabs
 
 const PropertyDetailPage = () => {
   const [form] = Form.useForm()
-  const [activeTab, setActiveTab] = useState('1')
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [currentFilter, setCurrentFilter] = useState('restaurants')
+  const [isFavorite, setIsFavorite] = useState(false)
   const onFinish = values => {
     console.log('Form values:', values)
   }
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
-    setIsAnimating(true);
-    setTimeout(() => {
-      setIsAnimating(false);
-    }, 1000);
-  };
 
   const propertyDetails = {
     interior: {
@@ -160,6 +146,16 @@ const PropertyDetailPage = () => {
     }
   ]
 
+  const filters = [
+    'Shopping & Groceries',
+    'Restaurants & Cafés',
+    'Healthcare Facilities',
+    'Parks & Recreation',
+    'Services',
+    'Educational Institutes',
+    'Transit'
+  ]
+
   return (
     <div className='max-w-7xl mx-auto p-4 bg-white'>
       {/* Property Images Section */}
@@ -176,10 +172,14 @@ const PropertyDetailPage = () => {
           >
             Video
           </Button>
-          
-            <div  className="absolute bottom-4 right-4 bg-white border-none rounded-full size-10 flex items-center justify-center p-0 transition-all duration-300">
-                <Like className={"size-6"} isLiked={isFavorite} setIsLiked={setIsFavorite}/>
-            </div>
+
+          <div className='absolute bottom-4 right-4 bg-white border-none rounded-full size-10 flex items-center justify-center p-0 transition-all duration-300'>
+            <Like
+              className={'size-6'}
+              isLiked={isFavorite}
+              setIsLiked={setIsFavorite}
+            />
+          </div>
         </div>
         <div className='grid grid-rows-2 gap-4'>
           <div className='rounded-lg overflow-hidden'>
@@ -240,7 +240,7 @@ const PropertyDetailPage = () => {
       </Card>
 
       {/* Main Content */}
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      <div className='grid grid-cols-1 lg:grid-cols-3  gap-6 '>
         {/* Left Column - Property Info */}
         <div className='lg:col-span-2 '>
           <Card className='mb-6  border border-[#E0E0E0]  shadow-[0px_4px_4px_0px_#00000040]'>
@@ -300,10 +300,13 @@ const PropertyDetailPage = () => {
                   key='1'
                   className='pb-0'
                 >
-                  <Tabs defaultActiveKey='1' className='property-details-tabs'>
-                    <TabPane tab='Interior' key='1'>
-                      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                        <div>
+                  <div className='flex flex-col gap-8'>
+                    <div className='flex flex-col'>
+                      <div className='px-4 py-1 border border[#8D8D8D] font-medium text-xl bg-[#F6F6F6]'>
+                        Interior
+                      </div>
+                      <div className='grid grid-cols-1 md:grid-cols-2 '>
+                        <div className='p-4 border-b-2'>
                           <h4 className='font-bold mb-2'>Bedrooms</h4>
                           <ul className='list-disc pl-5 space-y-1'>
                             <li>
@@ -315,35 +318,8 @@ const PropertyDetailPage = () => {
                               {propertyDetails.interior.bedrooms.primarySize}
                             </li>
                           </ul>
-                          <h4 className='font-bold mt-4 mb-2'>Appliances</h4>
-                          <ul className='list-disc pl-5 space-y-1'>
-                            <li>
-                              Kitchen:{' '}
-                              {propertyDetails.interior.appliances.kitchen}
-                            </li>
-                            <li>
-                              Laundry:{' '}
-                              {propertyDetails.interior.appliances.laundry}
-                            </li>
-                          </ul>
-                          <h4 className='font-bold mt-4 mb-2'>
-                            Other Rooms & Layout
-                          </h4>
-                          <ul className='list-disc pl-5 space-y-1'>
-                            <li>
-                              Total Rooms:{' '}
-                              {propertyDetails.interior.rooms.total}
-                            </li>
-                            {propertyDetails.interior.rooms.details.map(
-                              (room, index) => (
-                                <li key={index}>
-                                  {room.name}: {room.size} ({room.floor})
-                                </li>
-                              )
-                            )}
-                          </ul>
                         </div>
-                        <div>
+                        <div className=' border-l-2 p-4 border-b-2'>
                           <h4 className='font-bold mb-2'>Bathrooms</h4>
                           <ul className='list-disc pl-5 space-y-1'>
                             <li>
@@ -355,6 +331,21 @@ const PropertyDetailPage = () => {
                               {propertyDetails.interior.bathrooms.primarySize}
                             </li>
                           </ul>
+                        </div>
+                        <div className='px-4 border-b-2 pb-4'>
+                          <h4 className='font-bold mt-4 mb-2'>Appliances</h4>
+                          <ul className='list-disc pl-5 space-y-1'>
+                            <li>
+                              Kitchen:{' '}
+                              {propertyDetails.interior.appliances.kitchen}
+                            </li>
+                            <li>
+                              Laundry:{' '}
+                              {propertyDetails.interior.appliances.laundry}
+                            </li>
+                          </ul>
+                        </div>
+                        <div className=' border-b-2 border-l-2 px-4 pb-4'>
                           <h4 className='font-bold mt-4 mb-2'>
                             Heating & Air Conditioning
                           </h4>
@@ -372,6 +363,27 @@ const PropertyDetailPage = () => {
                               {propertyDetails.interior.heating.fireplaces}
                             </li>
                           </ul>
+                        </div>
+                        <div className=' px-4 border-b-2 pb-4'>
+                          <h4 className='font-bold mt-4 mb-2'>
+                            Other Rooms & Layout
+                          </h4>
+                          <ul className='list-disc pl-5 space-y-1'>
+                            <li>
+                              Total Rooms:{' '}
+                              {propertyDetails.interior.rooms.total}
+                            </li>
+                            {propertyDetails.interior.rooms.details.map(
+                              (room, index) => (
+                                <li key={index}>
+                                  {room.name}: {room.size} ({room.floor})
+                                </li>
+                              )
+                            )}
+                          </ul>
+                        </div>
+
+                        <div className=' px-4 border-b-2 border-l-2 pb-4'>
                           <h4 className='font-bold mt-4 mb-2'>
                             Features & Amenities
                           </h4>
@@ -395,10 +407,13 @@ const PropertyDetailPage = () => {
                           </ul>
                         </div>
                       </div>
-                    </TabPane>
-                    <TabPane tab='Exterior' key='2'>
-                      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                        <div>
+                    </div>
+                    <div className='flex flex-col'>
+                      <div className='px-4 py-1 border border[#8D8D8D] font-medium text-xl bg-[#F6F6F6]'>
+                        Exterior
+                      </div>
+                      <div className='grid grid-cols-1 md:grid-cols-2 '>
+                      <div className='p-4'>
                           <h4 className='font-bold mb-2'>Parking</h4>
                           <ul className='list-disc pl-5 space-y-1'>
                             <li>
@@ -411,7 +426,7 @@ const PropertyDetailPage = () => {
                             </li>
                           </ul>
                         </div>
-                        <div>
+                        <div className='p-4 border-l-2'>
                           <h4 className='font-bold mb-2'>Outdoor Features</h4>
                           <ul className='list-disc pl-5 space-y-1'>
                             <li>
@@ -429,8 +444,8 @@ const PropertyDetailPage = () => {
                           </ul>
                         </div>
                       </div>
-                    </TabPane>
-                  </Tabs>
+                    </div>
+                  </div>
                 </Panel>
               </Collapse>
             </div>
@@ -454,73 +469,99 @@ const PropertyDetailPage = () => {
                 >
                   <div className='mb-4'>
                     <div className='relative w-full h-80 bg-gray-200 rounded-lg overflow-hidden mb-4'>
-                      <img
-                        src='https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-WtawUhQlxBP6mVy9T97K9wquhP1dqe.png'
-                        alt='Map'
-                        className='w-full h-full object-cover'
-                      />
-                      <div className='absolute right-2 top-2 flex flex-col'>
-                        <Button
-                          className='bg-white mb-2 flex items-center justify-center h-8 w-8 p-0'
-                          icon={<PlusOutlined />}
-                        />
-                        <Button
-                          className='bg-white flex items-center justify-center h-8 w-8 p-0'
-                          icon={<MinusOutlined />}
-                        />
-                      </div>
+                      <MapUrl />
                     </div>
 
                     <Radio.Group
                       defaultValue='restaurants'
                       buttonStyle='solid'
-                      className='mb-4 flex flex-wrap gap-2'
-                    >
-                      <Radio.Button value='shopping' className='rounded-full'>
-                        Shopping & Groceries
-                      </Radio.Button>
-                      <Radio.Button
-                        value='restaurants'
-                        className='rounded-full bg-accent hover:!bg-accent hover:!text-black text-black border-accent hover:!bg-accent hover:!text-black'
-                      >
-                        Restaurants & Cafes
-                      </Radio.Button>
-                      <Radio.Button value='healthcare' className='rounded-full'>
-                        Healthcare Facilities
-                      </Radio.Button>
-                      <Radio.Button value='parks' className='rounded-full'>
-                        Parks & Recreation
-                      </Radio.Button>
-                      <Radio.Button value='services' className='rounded-full'>
-                        Services
-                      </Radio.Button>
-                      <Radio.Button value='education' className='rounded-full'>
-                        Educational Institutes
-                      </Radio.Button>
-                      <Radio.Button value='transit' className='rounded-full'>
-                        Transit
-                      </Radio.Button>
-                    </Radio.Group>
+                      value={currentFilter}
+                      block
+                      optionType='button'
+                      onChange={e => setCurrentFilter(e.target.value)}
+                      className='mb-4 flex flex-wrap gap-2 radio'
+                      options={filters.map(filter => ({
+                        label: (
+                          <p className='whitespace-nowrap w-fit'>{filter}</p>
+                        ),
+                        value: filter,
+                        style: {
+                          borderRadius: '100px',
+                          background: '#fff',
+                          color: '#000'
+                        }
+                      }))}
+                    />
 
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                      {nearbyPlaces.map((place, index) => (
-                        <div
-                          key={index}
-                          className='flex items-center border-b pb-4'
-                        >
-                          {place.type === 'restaurant' ? (
-                            <RestaurantIcon />
-                          ) : (
-                            <CafeIcon />
-                          )}
-                          <div className='ml-3'>
-                            <div className='font-bold'>{place.name}</div>
-                            <div className='text-gray-500 text-sm'>
-                              {place.distance}
+                    <div className='grid grid-cols-1 md:grid-cols-2 border-t'>
+                      {nearbyPlaces
+                        ?.filter(place =>
+                          currentFilter
+                            ?.toLowerCase()
+                            .indexOf(place?.type?.toLowerCase())
+                        )
+                        ?.map((place, index) => (
+                          <div
+                            key={index}
+                            className='flex items-center border-b p-4 border-r '
+                          >
+                            <div className='flex items-center justify-evenly size-12 bg-accent rounded-lg'>
+                              {place.type == 'restaurant' ? (
+                                <svg
+                                  width='29'
+                                  height='29'
+                                  viewBox='0 0 29 29'
+                                  fill='none'
+                                  xmlns='http://www.w3.org/2000/svg'
+                                >
+                                  <g clipPath='url(#clip0_1209_3854)'>
+                                    <path
+                                      d='M3.2553 2.70312L24.1234 23.5712C24.5194 23.9672 24.7418 24.5043 24.7418 25.0643C24.7418 25.6243 24.5194 26.1613 24.1234 26.5573C23.7273 26.9531 23.1903 27.1755 22.6304 27.1755C22.0704 27.1755 21.5334 26.9531 21.1373 26.5573L16.0397 21.3719C15.7061 21.0331 15.5189 20.5769 15.5186 20.1014V19.7882C15.5186 19.5481 15.471 19.3105 15.3784 19.089C15.2858 18.8675 15.1502 18.6666 14.9793 18.4979L14.3212 17.8902C14.0977 17.684 13.8261 17.5374 13.5311 17.4637C13.2361 17.3901 12.9274 17.3918 12.6333 17.4688C12.1695 17.5898 11.6821 17.5875 11.2195 17.462C10.7569 17.3365 10.3351 17.0922 9.9961 16.7534L5.15729 11.914C2.28674 9.04348 1.2304 4.70877 3.2553 2.70312Z'
+                                      stroke='black'
+                                      strokeWidth='2'
+                                      strokeLinejoin='round'
+                                    />
+                                    <path
+                                      d='M22.6558 1.8125L18.2803 6.18799C17.9436 6.52461 17.6765 6.92427 17.4943 7.36413C17.3121 7.80399 17.2183 8.27543 17.2183 8.75154V9.59322C17.2183 9.71231 17.1948 9.83023 17.1493 9.94025C17.1037 10.0503 17.0369 10.1502 16.9526 10.2344L16.312 10.875M18.1245 12.6875L18.7651 12.0469C18.8493 11.9627 18.9493 11.8958 19.0593 11.8503C19.1693 11.8047 19.2872 11.7812 19.4063 11.7812H20.248C20.7241 11.7813 21.1955 11.6875 21.6354 11.5052C22.0752 11.323 22.4749 11.0559 22.8115 10.7192L27.187 6.34375M24.9214 4.07812L20.3901 8.60938M11.3276 20.8438L5.67944 26.5237C5.25457 26.9484 4.6784 27.187 4.07764 27.187C3.47688 27.187 2.90071 26.9484 2.47584 26.5237C2.05111 26.0988 1.8125 25.5226 1.8125 24.9219C1.8125 24.3211 2.05111 23.7449 2.47584 23.3201L7.24952 18.5781'
+                                      stroke='black'
+                                      strokeWidth='2'
+                                      strokeLinecap='round'
+                                      strokeLinejoin='round'
+                                    />
+                                  </g>
+                                  <defs>
+                                    <clipPath id='clip0_1209_3854'>
+                                      <rect
+                                        width='29'
+                                        height='29'
+                                        fill='white'
+                                      />
+                                    </clipPath>
+                                  </defs>
+                                </svg>
+                              ) : (
+                                <svg
+                                  width='32'
+                                  height='32'
+                                  viewBox='0 0 32 32'
+                                  fill='none'
+                                  xmlns='http://www.w3.org/2000/svg'
+                                >
+                                  <path
+                                    d='M25.9844 8C26.8073 8 27.5833 8.15625 28.3125 8.46875C29.0417 8.78125 29.6771 9.20833 30.2188 9.75C30.7604 10.2917 31.1927 10.9323 31.5156 11.6719C31.8385 12.4115 31.9948 13.1875 31.9844 14C31.9844 14.8333 31.8281 15.6094 31.5156 16.3281C31.2031 17.0469 30.776 17.6823 30.2344 18.2344C29.6927 18.7865 29.0521 19.2188 28.3125 19.5312C27.5729 19.8438 26.7969 20 25.9844 20H24.375C23.9167 20.8021 23.3698 21.5417 22.7344 22.2188C22.099 22.8958 21.3958 23.4896 20.625 24H24.9844C25.2552 24 25.4896 24.099 25.6875 24.2969C25.8854 24.4948 25.9844 24.7292 25.9844 25C25.9844 25.2708 25.8854 25.5052 25.6875 25.7031C25.4896 25.901 25.2552 26 24.9844 26H2.98438C2.71354 26 2.47917 25.901 2.28125 25.7031C2.08333 25.5052 1.98438 25.2708 1.98438 25C1.98438 24.7292 2.08333 24.4948 2.28125 24.2969C2.47917 24.099 2.71354 24 2.98438 24H7.34375C6.5 23.4375 5.75 22.7917 5.09375 22.0625C4.4375 21.3333 3.875 20.5417 3.40625 19.6875C2.9375 18.8333 2.58854 17.9219 2.35938 16.9531C2.13021 15.9844 2.00521 15 1.98438 14V8H25.9844ZM13.9844 24C14.901 24 15.7865 23.8802 16.6406 23.6406C17.4948 23.401 18.2917 23.0677 19.0312 22.6406C19.7708 22.2135 20.4427 21.6927 21.0469 21.0781C21.651 20.4635 22.1719 19.7865 22.6094 19.0469C23.0469 18.3073 23.3854 17.5104 23.625 16.6562C23.8646 15.8021 23.9844 14.9167 23.9844 14V10H3.98438V14C3.98438 14.9167 4.10417 15.8021 4.34375 16.6562C4.58333 17.5104 4.91667 18.3073 5.34375 19.0469C5.77083 19.7865 6.29167 20.4583 6.90625 21.0625C7.52083 21.6667 8.19792 22.1875 8.9375 22.625C9.67708 23.0625 10.474 23.401 11.3281 23.6406C12.1823 23.8802 13.0677 24 13.9844 24ZM25.9844 18C26.5365 18 27.0521 17.8958 27.5312 17.6875C28.0104 17.4792 28.4375 17.1927 28.8125 16.8281C29.1875 16.4635 29.474 16.0417 29.6719 15.5625C29.8698 15.0833 29.974 14.5625 29.9844 14C29.9844 13.4479 29.8802 12.9323 29.6719 12.4531C29.4635 11.974 29.1771 11.5469 28.8125 11.1719C28.4479 10.7969 28.026 10.5104 27.5469 10.3125C27.0677 10.1146 26.5469 10.0104 25.9844 10C25.9844 10.6771 25.9896 11.3542 26 12.0312C26.0104 12.7083 26.0052 13.3802 25.9844 14.0469C25.9635 14.7135 25.901 15.375 25.7969 16.0312C25.6927 16.6875 25.526 17.3438 25.2969 18H25.9844Z'
+                                    fill='black'
+                                  />
+                                </svg>
+                              )}
+                            </div>
+                            <div className='ml-3'>
+                              <div className='font-bold'>{place.name}</div>
+                              <div className='text-gray-500 text-sm'>
+                                {place.distance}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </div>
                 </Panel>
@@ -530,7 +571,7 @@ const PropertyDetailPage = () => {
         </div>
 
         {/* Right Column - Schedule Tour */}
-        <div className='lg:col-span-1'>
+        <div className='lg:col-span-1 sticky top-4 self-start'>
           <Card className='border border-[#E0E0E0]  shadow-[0px_4px_4px_0px_#00000040]'>
             <h2 className='text-2xl font-bold text-center mb-6'>
               Schedule a Tour
@@ -540,10 +581,13 @@ const PropertyDetailPage = () => {
               <Form.Item
                 name='name'
                 label='Name'
-                  className='font-medium'
+                className='font-medium'
                 rules={[{ required: true, message: 'Please enter your name' }]}
               >
-                <Input placeholder='Enter your First Name..' className={css+" dp"} />
+                <Input
+                  placeholder='Enter your First Name..'
+                  className={css + ' dp'}
+                />
               </Form.Item>
 
               <Form.Item
@@ -554,41 +598,102 @@ const PropertyDetailPage = () => {
                   { type: 'email', message: 'Please enter a valid email' }
                 ]}
               >
-                <Input placeholder='Enter your Email Address..' className={css+" dp"} />
+                <Input
+                  placeholder='Enter your Email Address..'
+                  className={css + ' dp'}
+                />
               </Form.Item>
 
               <Form.Item
-            name='phone'
-            label={<p className='font-medium'>Phone Number</p>}
-            
-            rules={[
-              { required: true, message: 'Please enter your phone number' },
-              {
-                pattern: /^[0-9]+$/,
-                message: 'The phone number must not contain any letters'
-              }
-            ]}
-          >
-            <Input
-              style={{
-                borderRadius: '0px',
-                border: 'none',
-                background: '#fff'
-              }}
-              className='dp'
-              styles={{
-                input: {
-                  borderTop: 'none',
-                  borderLeft: 'none',
-                  borderRight: 'none',
-                  borderRadius: '0px',
-                  marginLeft: '1rem',
-                  width: '90%'
-                }
-              }}
-              addonBefore={
-                <Select
+                name='phone'
+                label={<p className='font-medium'>Phone Number</p>}
+                rules={[
+                  { required: true, message: 'Please enter your phone number' },
+                  {
+                    pattern: /^[0-9]+$/,
+                    message: 'The phone number must not contain any letters'
+                  }
+                ]}
+              >
+                <Input
+                  style={{
+                    borderRadius: '0px',
+                    border: 'none',
+                    background: '#fff'
+                  }}
                   className='dp'
+                  styles={{
+                    input: {
+                      borderTop: 'none',
+                      borderLeft: 'none',
+                      borderRight: 'none',
+                      borderRadius: '0px',
+                      marginLeft: '1rem',
+                      width: '90%'
+                    }
+                  }}
+                  addonBefore={
+                    <Select
+                      className='dp'
+                      suffixIcon={
+                        <svg
+                          width='10'
+                          height='6'
+                          viewBox='0 0 10 6'
+                          fill='none'
+                          xmlns='http://www.w3.org/2000/svg'
+                        >
+                          <path
+                            d='M0 0.207031L5 5.20703L10 0.207031H0Z'
+                            fill='#242426'
+                          />
+                        </svg>
+                      }
+                      defaultValue='+1'
+                      style={{
+                        width: 70,
+                        borderTop: 'none',
+                        borderLeft: 'none',
+                        borderRight: 'none',
+                        borderRadius: '0px',
+                        background: '#fff'
+                      }}
+                    >
+                      <Option value='+1'>+1</Option>
+                      <Option value='+44'>+44</Option>
+                    </Select>
+                  }
+                  placeholder='(000) 000 0000'
+                />
+              </Form.Item>
+
+              <Form.Item name='message' label='Message'>
+                <Input.TextArea
+                  rows={1}
+                  placeholder='Enter your Message'
+                  className={css + ' dp'}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name='date'
+                label='Date'
+                rules={[{ required: true, message: 'Please select a date' }]}
+              >
+                <DatePicker
+                  className={css + ' dp'}
+                  format='MM/DD/YYYY'
+                  placeholder='mm/dd/yy'
+                  suffixIcon={<CalendarOutlined />}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name='time'
+                label='Time'
+                rules={[{ required: true, message: 'Please select a time' }]}
+              >
+                <Select
                   suffixIcon={
                     <svg
                       width='10'
@@ -603,62 +708,9 @@ const PropertyDetailPage = () => {
                       />
                     </svg>
                   }
-                  defaultValue='+1'
-                  style={{
-                    width: 70,
-                    borderTop: 'none',
-                    borderLeft: 'none',
-                    borderRight: 'none',
-                    borderRadius: '0px',
-                    background: '#fff'
-                  }}
+                  placeholder='9:00 am'
+                  className={css + ' dp'}
                 >
-                  <Option value='+1'>+1</Option>
-                  <Option value='+44'>+44</Option>
-                </Select>
-              }
-              placeholder='(000) 000 0000'
-            />
-          </Form.Item>
-
-              <Form.Item name='message' label='Message'>
-                <Input.TextArea rows={1} placeholder='Enter your Message' className={css+" dp"}  />
-              </Form.Item>
-
-              <Form.Item
-                name='date'
-                label='Date'
-                rules={[{ required: true, message: 'Please select a date' }]}
-              >
-                <DatePicker
-                  className={css+" dp"} 
-                  format='MM/DD/YYYY'
-                  placeholder='mm/dd/yy'
-                  suffixIcon={<CalendarOutlined />}
-                />
-              </Form.Item>
-
-              <Form.Item
-                name='time'
-                label='Time'
-                rules={[{ required: true, message: 'Please select a time' }]}
-              >
-                <Select 
-                 suffixIcon={
-                    <svg
-                      width='10'
-                      height='6'
-                      viewBox='0 0 10 6'
-                      fill='none'
-                      xmlns='http://www.w3.org/2000/svg'
-                    >
-                      <path
-                        d='M0 0.207031L5 5.20703L10 0.207031H0Z'
-                        fill='#242426'
-                      />
-                    </svg>
-                  }
-                placeholder='9:00 am' className={css+" dp"} >
                   <Option value='9:00'>9:00 am</Option>
                   <Option value='10:00'>10:00 am</Option>
                   <Option value='11:00'>11:00 am</Option>
