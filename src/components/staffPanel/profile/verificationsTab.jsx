@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import VerificationCard from './VerificationCard'
-import VerificationModal from './VerificationModal'
+import VerificationCard from './verificationCard'
+import VerificationModal from './verificationModal'
 
 const VerificationsTab = () => {
   const [showVerificationModal, setShowVerificationModal] = useState(false)
