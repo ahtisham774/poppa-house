@@ -105,6 +105,83 @@ html{
   -moz-osx-font-smoothing: grayscale;
 }
 
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+.progress-circular {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.progress-circular-track {
+  @apply stroke-gray-200;
+  fill: none;
+  stroke-width: 10;
+}
+
+.progress-circular-fill {
+  @apply stroke-secondary;
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  transform-origin: center;
+  transform: rotate(-90deg);
+}
+
+
+.br{
+  @apply  border-2 border-[#b1b1b171] ;
+}
+
+.tab {
+  @apply py-1 rounded px-4 cursor-pointer;
+}
+
+.tab.active {
+  @apply bg-accent font-medium;
+}
+
+.badge {
+  @apply px-2 py-0.5 rounded text-xs;
+}
+
+.badge-completed {
+  @apply bg-green-100 text-green-800;
+}
+
+.badge-progress {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.badge-new {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.btn {
+  @apply px-4 py-2 rounded transition-colors;
+}
+
+.btn-primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.btn-secondary {
+  @apply bg-white border border-gray-300 hover:bg-gray-50;
+}
+
+.btn-blue {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.btn-yellow {
+  @apply bg-accent text-black hover:bg-accent/90;
+}
+
+.btn-dark {
+  @apply bg-gray-900 text-white hover:bg-gray-800;
+}
 
 body {
   margin: 0;
@@ -119,7 +196,14 @@ body {
     padding-right: 2rem;
   }
 }
+/* Custom progress bar styling */
+.progress-bar {
+  @apply h-2 bg-gray-200 rounded-full overflow-hidden;
+}
 
+.progress-bar-fill {
+  @apply h-full bg-secondary rounded-full;
+}
 .dp .ant-select-selector, .dp .ant-input-outlined,
 .dp .ant-input-group-addon,
 .dp .ant-input-password ,
@@ -267,4 +351,8 @@ body {
   color: hsl(var(--accent-foreground)) !important;
   border-color: hsl(var(--accent)) !important;
 
+}
+
+:where(.css-dev-only-do-not-override-1v613y0).ant-collapse>.ant-collapse-item .ant-collapse-collapsible-header .ant-collapse-header-text {
+  flex: auto !important
 }

@@ -77,9 +77,11 @@ export function HowItWorks({ steps = [] }) {
                   />
                 </svg>
               )}
-              className='bg-white shadow-sm w-full'
+              
+              className='bg-white shadow-sm w-full '
             >
               <Collapse.Panel
+              
                 header={step.title}
                 className='bg-[#F6F6F6] !rounded-none  text-2xl font-medium shadow-[4px_4px_4px_0px_#00000040]'
 
