@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import ReviewCard from './ReviewCard'
+import ReviewCard from './reviewCard'
 
 const RatingsReviewsTab = () => {
   const [currentPage, setCurrentPage] = useState(1)
