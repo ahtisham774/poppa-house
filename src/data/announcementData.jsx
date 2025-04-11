@@ -7,6 +7,7 @@ export const announcements = [
     date: '1 hour ago',
     category: 'Company Update',
     isNew: true,
+    isRead: true,
     icon: (
       <div className='w-10 h-10 bg-[#EFF6FF] rounded-full flex items-center justify-center'>
         <BiBell className='text-blue-500' size={20} />
@@ -16,7 +17,34 @@ export const announcements = [
     content:
       "We're excited to announce that Proppa House is expanding our service offerings to include garden maintenance. This addition aligns with our mission to provide comprehensive home care services to our valued clients.\n\nStarting next month, we'll be offering basic garden maintenance services including lawn mowing, hedge trimming, and general garden tidying. This creates additional earning opportunities for our team members who are interested in garden work.\n\nFull training will be provided through the PH Info Centre. If you're interested in adding garden maintenance to your skills, please complete the relevant training modules that will be available next week.",
     relevantFor: 'Cleaner, Supervisor, Gardener',
-    fullDate: 'October 12, 2025'
+    fullDate: 'October 12, 2025',
+    likes: 20,
+    comments: [
+      {
+        id: 101,
+        author: 'John Doe',
+        date: '20 Jan 2025',
+        content:
+          "Great insights! I've been considering investing in London real estate, and this article really helped me understand the market trends.",
+        avatar: 'https://randomuser.me/api/portraits/men/39.jpg'
+      },
+      {
+        id: 102,
+        author: 'John Doe',
+        date: '20 Jan 2025',
+        content:
+          "Great insights! I've been considering investing in London real estate, and this article really helped me understand the market trends.",
+        avatar: 'https://randomuser.me/api/portraits/men/42.jpg'
+      },
+      {
+        id: 103,
+        author: 'John Doe',
+        date: '20 Jan 2025',
+        content:
+          "Great insights! I've been considering investing in London real estate, and this article really helped me understand the market trends.",
+        avatar: 'https://randomuser.me/api/portraits/men/40.jpg'
+      }
+    ]
   },
   {
     id: 'health-safety',
@@ -24,6 +52,7 @@ export const announcements = [
     date: '2/15/2025',
     category: 'Policy',
     isNew: true,
+    isRead: true,
     icon: (
       <div className='w-10 h-10 bg-[#FEF9C3] rounded-full flex items-center justify-center'>
         <BiFile className='text-yellow-500' size={20} />
@@ -31,7 +60,9 @@ export const announcements = [
     ),
     snippet: 'Important changes to our safety protocols',
     content:
-      'Important updates to our health and safety protocols have been implemented. All employees must review these changes as they affect daily operations.'
+      'Important updates to our health and safety protocols have been implemented. All employees must review these changes as they affect daily operations.',
+    likes: 5,
+    comments: []
   },
   {
     id: 'cleaning-products',
@@ -39,6 +70,7 @@ export const announcements = [
     date: '2 days ago',
     category: 'Training',
     isNew: true,
+    isRead: false,
     icon: (
       <div className='w-10 h-10 bg-[#DCFCE7] rounded-full flex items-center justify-center'>
         <svg
@@ -57,6 +89,25 @@ export const announcements = [
     ),
     snippet: "We're introducing a new line of eco-friendly cleaning products",
     content:
-      "We're introducing a new line of eco-friendly cleaning products next month. These products are better for the environment while maintaining our high cleaning standards."
+      "We're introducing a new line of eco-friendly cleaning products next month. These products are better for the environment while maintaining our high cleaning standards.",
+    likes: 45,
+    comments: [
+      {
+        id: 105,
+        author: 'Michael Chen',
+        date: '29 Mar 2025',
+        content:
+          'Thank you so much for this recognition! It means a lot to be appreciated for the work we do.',
+        avatar: 'https://randomuser.me/api/portraits/men/39.jpg'
+      },
+      {
+        id: 106,
+        author: 'Team Leader',
+        date: '30 Mar 2025',
+        content:
+          'Well deserved! The feedback from clients has been outstanding.',
+        avatar: 'https://randomuser.me/api/portraits/men/39.jpg'
+      }
+    ]
   }
 ]

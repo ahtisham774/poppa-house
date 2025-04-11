@@ -14,6 +14,7 @@ const TrainingDetailsPage = () => {
   const [module, setModule] = useState(null)
   const [isKnowledgeChecked, setIsKnowledgeChecked] = useState(false)
   const [isMarkedComplete, setIsMarkedComplete] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
   // Find the training material with the matching ID
   const training =
     trainingMaterials.find(t => t.id === id) || trainingMaterials[0]
@@ -224,60 +225,119 @@ const TrainingDetailsPage = () => {
               ))}
             </div>
           )}
-          {!isKnowledgeChecked && selectedModule && (
-            <div className='mt-6'>
+          {selectedModule && (
+            <div
+              className={`mt-6 transition-all duration-300 ${
+                isExpanded
+                  ? 'fixed inset-0 z-50 bg-white p-6 overflow-auto'
+                  : ''
+              }`}
+            >
               <div className='grid grid-cols-1 gap-6'>
                 <div className='border rounded-lg p-5'>
-                  <h2 className='text-2xl font-medium mb-1'>Module Content</h2>
-                  <p className='text-[#888888] text-sm mb-5'>
-                    {training.title}
-                  </p>
-
-                  <div className='bg-[#F1F5F9] p-10 rounded-lg mb-8 flex flex-col items-center justify-center min-h-[300px]'>
-                    <span className='size-8'>{getIcon(module.type)}</span>
+                  <div className='flex items-center  justify-between flex-wrap gap-5'>
+                    <div>
+                      <h2 className='text-2xl font-medium mb-1'>
+                        Module Content
+                      </h2>
+                      <p className='text-[#888888] text-sm mb-5'>
+                        {training.title}
+                      </p>
+                    </div>
+                    <button onClick={() => setIsExpanded(!isExpanded)}>
+                      {isExpanded ? (
+                        <svg
+                          width='43'
+                          height='38'
+                          viewBox='0 0 43 38'
+                          fill='none'
+                          xmlns='http://www.w3.org/2000/svg'
+                        >
+                          <rect
+                            x='0.25'
+                            y='0.25'
+                            width='42.5'
+                            height='35.5'
+                            rx='5.75'
+                            stroke='#B1B1B1'
+                            strokeWidth='0.5'
+                          />
+                          <path
+                            d='M24.249 9.33232H22.0823V16.9157H29.6657V14.749H25.7808L30.4316 10.0982L28.8997 8.56641L24.249 13.2172V9.33232ZM12.3323 21.249H16.2172L11.5664 25.8997L13.0982 27.4316L17.749 22.7808V26.6657H19.9157V19.0823H12.3323V21.249Z'
+                            fill='black'
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          width='43'
+                          height='38'
+                          viewBox='0 0 43 38'
+                          fill='none'
+                          xmlns='http://www.w3.org/2000/svg'
+                        >
+                          <rect
+                            x='0.25'
+                            y='0.25'
+                            width='42.5'
+                            height='35.5'
+                            rx='5.75'
+                            stroke='#B1B1B1'
+                            strokeWidth='0.5'
+                          />
+                          <path
+                            d='M25.6106 11.5714L21.7534 15.4286L23.5714 17.2466L27.4286 13.3894V16.7143H30V9H22.2857V11.5714H25.6106ZM16.3894 24.4286L20.2466 20.5714L18.4286 18.7534L14.5714 22.6106V19.2857H12V27H19.7143V24.4286H16.3894Z'
+                            fill='black'
+                          />
+                        </svg>
+                      )}
+                    </button>
                   </div>
 
-                  <div className='flex justify-between'>
-                    <button className='btn btn-secondary flex items-center'>
-                      <BiChevronLeft size={18} />
-                      <span>Previous</span>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setIsKnowledgeChecked(!isKnowledgeChecked)
-                        setIsMarkedComplete(false)
-                      }}
-                      className='btn btn-secondary'
-                    >
-                      Check Knowledge
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setIsMarkedComplete(!isMarkedComplete)
+                  {!isKnowledgeChecked && (
+                    <div>
+                      <div className='bg-[#F1F5F9] p-10 rounded-lg mb-8 flex flex-col items-center justify-center min-h-[300px]'>
+                        <span className='size-8'>{getIcon(module.type)}</span>
+                      </div>
+                      <div className='flex justify-between'>
+                        <button className='btn btn-secondary flex items-center'>
+                          <BiChevronLeft size={18} />
+                          <span>Previous</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setIsKnowledgeChecked(!isKnowledgeChecked)
+                            setIsMarkedComplete(false)
+                          }}
+                          className='btn btn-secondary'
+                        >
+                          Check Knowledge
+                        </button>
+                        <button
+                          onClick={() => {
+                            setIsMarkedComplete(!isMarkedComplete)
+                            setIsKnowledgeChecked(false)
+                          }}
+                          className='btn btn-secondary'
+                        >
+                          Marked as Complete
+                        </button>
+                        <button className='btn btn-secondary flex items-center'>
+                          <span>Next</span>
+                          <BiChevronRight size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {isKnowledgeChecked && (
+                    <KnowledgeCheck
+                      handleCancel={() => {
                         setIsKnowledgeChecked(false)
                       }}
-                      className='btn btn-secondary'
-                    >
-                      Marked as Complete
-                    </button>
-
-                    <button className='btn btn-secondary flex items-center'>
-                      <span>Next</span>
-                      <BiChevronRight size={18} />
-                    </button>
-                  </div>
+                    />
+                  )}
                 </div>
               </div>
             </div>
-          )}
-          {isKnowledgeChecked && (
-            <KnowledgeCheck
-              handleCancel={() => {
-                setIsKnowledgeChecked(false)
-              }}
-            />
           )}
         </div>
 

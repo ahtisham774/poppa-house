@@ -33,6 +33,7 @@ import AssignJobs from './pages/assignJobs'
 import AssignJobDetail from './pages/assignJobDetail'
 import JobHistory from './pages/jobHistory'
 import JobHistoryDetail from './pages/jobHistoryDetail'
+import Announcement from './pages/announcement'
 
 function App () {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -105,7 +106,7 @@ function App () {
         <Route path='training/:id' element={<TrainingDetailsPage />} />
         <Route path='training-materials' element={<TrainingMaterialsPage />} />
         <Route path='announcements' element={<AnnouncementsPage />} />
-        <Route path='announcements/:id' element={<AnnouncementDetailsPage />} />
+        <Route path='announcements/:id' element={<Announcement />} />
       </Route>
       <Route path='*' element={<h1>404 Not Found</h1>} />
     </Routes>

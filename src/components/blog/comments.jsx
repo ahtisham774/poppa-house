@@ -52,7 +52,7 @@ const Comments = ({ comments }) => {
       {/* Comment List */}
       <div className='space-y-6'>
       {displayedComments.map(comment => (
-          <div key={comment.id} className='border-b border-gray-100 pb-6'>
+          <div key={comment.id} className='border-b border-[#D9D9D9] pb-6'>
             <div className='flex items-center mb-2'>
               <img
                 src={comment.avatar}

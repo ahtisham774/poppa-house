@@ -9,7 +9,7 @@ const AnnouncementsPage = () => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('unread')
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null)
+
   const [readAnnouncements, setReadAnnouncements] = useState([])
 
   // Filter announcements based on active tab and search query
@@ -39,7 +39,8 @@ const AnnouncementsPage = () => {
   }
 
   const handleAnnouncementClick = (announcement) => {
-    setSelectedAnnouncement(announcement)
+    // setSelectedAnnouncement(announcement)
+    navigate(`/staff/announcements/${announcement.id}`)
   }
 
   const handleMarkAsRead = (id) => {
@@ -49,9 +50,7 @@ const AnnouncementsPage = () => {
     setSelectedAnnouncement(null)
   }
 
-  const closeModal = () => {
-    setSelectedAnnouncement(null)
-  }
+
   return (
     <div className='max-w-6xl mx-auto p-6'>
       <TopTitle title='Proppa House Info Centre' subTitle='PH Info Centre' />
@@ -165,7 +164,7 @@ const AnnouncementsPage = () => {
       </div>
       )}
       </div>
-      {selectedAnnouncement && (
+      {/* {selectedAnnouncement && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="relative bg-white border rounded-lg p-8 max-w-3xl w-full mx-auto max-h-[90vh] overflow-y-auto">
             <button 
@@ -206,7 +205,7 @@ const AnnouncementsPage = () => {
             )}
           </div>
         </div>
-      )}
+      )} */}
     </div>
   )
 }
