@@ -2,8 +2,10 @@
 import StatCard from './statCard';
 import JobHistoryCard from './jobHistoryCard';
 import NotificationsCard from './notificationsCard';
+import { useAuth } from '../../../context/useAuth';
 
-const Dashboard = ({ user, stats }) => {
+const Dashboard = ({  stats }) => {
+  const {user} = useAuth()
   return (
     <div className="p-6">
       <div className='flex flex-col mb-5'>

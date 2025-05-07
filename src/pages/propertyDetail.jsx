@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Card,
   Button,
@@ -14,13 +14,22 @@ import {
   AreaChartOutlined,
   VideoCameraOutlined,
   PictureOutlined,
-  CalendarOutlined
+  CalendarOutlined,
+  MessageOutlined,
+  PhoneOutlined
 } from '@ant-design/icons'
 import { FaBath, FaBed, FaCar } from 'react-icons/fa'
 import ArrowDown from '../components/svg/arrowDown'
 import { css } from './register'
 import Like from '../components/common/like'
 import MapUrl from '../components/common/mapUrl'
+import MessageModal from '../components/clientPortal/properties-hub/messageModal'
+import MakeOfferModal from '../components/clientPortal/properties-hub/makeOfferModal'
+import { properties } from '../components/clientPortal/properties-hub/data'
+import { useParams } from 'react-router-dom'
+import NegotiateSection from '../components/clientPortal/properties-hub/negotiateSection'
+import PropertyLayout from '../components/clientPortal/properties-hub/propertiesLayout'
+import InterestInProperty from '../components/clientPortal/properties-hub/interestInProperty'
 
 // Custom icons to match the design
 export const BedIcon = ({ className }) => (
@@ -62,13 +71,57 @@ const CafeIcon = () => (
 const { Panel } = Collapse
 const { Option } = Select
 
-const PropertyDetailPage = () => {
+const PropertyDetailPage = ({ isLiked = false }) => {
   const [form] = Form.useForm()
   const [currentFilter, setCurrentFilter] = useState('restaurants')
   const [isFavorite, setIsFavorite] = useState(false)
+  const [property, setProperty] = useState(null)
+  const [messageModalVisible, setMessageModalVisible] = useState(false)
+  const [makeOfferModalVisible, setMakeOfferModalVisible] = useState(false)
+  const [negotiationState, setNegotiationState] = useState('')
+  const [offerAmount, setOfferAmount] = useState(190000)
+  const [counterOfferAmount, setCounterOfferAmount] = useState(195000)
+  const [specialRequests, setSpecialRequests] = useState(
+    'We love the location and would like to schedule a visit before finalizing.'
+  )
+
+  const { id } = useParams()
   const onFinish = values => {
     console.log('Form values:', values)
   }
+  useEffect(() => {
+    // Find property by ID
+    const foundProperty = properties.find(p => p.id == id)
+    if (foundProperty) {
+      setProperty(foundProperty)
+    }
+  }, [id])
+
+  const [offerHistory, setOfferHistory] = useState([
+    {
+      from: 'you',
+      amount: 190000,
+      message:
+        'We love the location and would like to schedule a visit before finalizing.',
+      date: '5/2/2025, 9:07 PM',
+      status: 'initial'
+    },
+    {
+      from: 'lister',
+      amount: 195000,
+      message: 'I can accept your proposal with some adjustments.',
+      date: '5/2/2025, 10:07 PM',
+      status: 'counter'
+    },
+    {
+      from: 'you',
+      amount: 196000,
+      message:
+        'We love the location and would like to schedule a visit before finalizing.',
+      date: '5/2/2025, 9:07 PM',
+      status: 'pending'
+    }
+  ])
 
   const propertyDetails = {
     interior: {
@@ -156,8 +209,98 @@ const PropertyDetailPage = () => {
     'Transit'
   ]
 
+  const handleSendMessage = message => {
+    console.log('Sending message:', message)
+    setMessageModalVisible(false)
+    // Here you would typically send the message to your backend
+  }
+
+  const handleSubmitOffer = offerData => {
+    console.log('Submitting offer:', offerData)
+    setMakeOfferModalVisible(false)
+    setOfferAmount(Number.parseInt(offerData.offerAmount))
+    setSpecialRequests(offerData.specialRequests)
+    setNegotiationState('pending_response')
+
+    // Add to offer history
+    const newOffer = {
+      from: 'you',
+      amount: Number.parseInt(offerData.offerAmount),
+      message: offerData.specialRequests,
+      date: new Date().toLocaleString(),
+      status: 'pending'
+    }
+
+    setOfferHistory([...offerHistory, newOffer])
+  }
+
+  const handleMakeOffer = () => {
+    setMakeOfferModalVisible(true)
+  }
+
+  const handleAcceptOffer = () => {
+    setNegotiationState('deal_finalized')
+
+    // Add to offer history
+    const newEntry = {
+      from: 'you',
+      amount: counterOfferAmount,
+      message: 'Offer accepted',
+      date: new Date().toLocaleString(),
+      status: 'accepted'
+    }
+
+    setOfferHistory([...offerHistory, newEntry])
+  }
+
+  const handleRejectOffer = () => {
+    setNegotiationState('offer_rejected')
+
+    // Add to offer history
+    const newEntry = {
+      from: 'you',
+      amount: offerAmount,
+      message: 'Offer rejected',
+      date: new Date().toLocaleString(),
+      status: 'rejected'
+    }
+
+    setOfferHistory([...offerHistory, newEntry])
+  }
+
+  const handleCounterOffer = () => {
+    setMakeOfferModalVisible(true)
+  }
+
+  const formatPrice = price => {
+    if (typeof price === 'string') {
+      if (price.includes('/mo')) {
+        return `£${price.replace('/mo', '')}/mo`
+      }
+      return `£${price}`
+    }
+    return `£${price}`
+  }
+
+  // Function to cycle through different negotiation states for demo purposes
+  const cycleNegotiationState = () => {
+    const states = [
+      '',
+      'pending_response',
+      'counteroffer_received',
+      'counteroffer_sent',
+      'offer_rejected',
+      'deal_finalized',
+      'initial_offer'
+    ]
+
+    const currentIndex = states.indexOf(negotiationState)
+    const nextIndex = (currentIndex + 1) % states.length
+    setNegotiationState(states[nextIndex])
+  }
+
   return (
-    <div className='max-w-7xl mx-auto p-4 bg-white'>
+    <div className='w-full'>
       {/* Property Images Section */}
       <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-6'>
         <div className='md:col-span-2 relative rounded-lg overflow-hidden'>
@@ -172,7 +315,6 @@ const PropertyDetailPage = () => {
           >
             Video
           </Button>
-
           <div className='absolute bottom-4 right-4 bg-white border-none rounded-full size-10 flex items-center justify-center p-0 transition-all duration-300'>
             <Like
               className={'size-6'}
@@ -204,7 +346,6 @@ const PropertyDetailPage = () => {
           </div>
         </div>
       </div>
-
       {/* Property Features */}
       <Card className='mb-6 border border-[#E0E0E0] '>
         <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
@@ -233,12 +374,10 @@ const PropertyDetailPage = () => {
                 fill='#44CCFF'
               />
             </svg>
-
             <span className='ml-2 text-lg'>2400 Square Feet</span>
           </div>
         </div>
       </Card>
-
       {/* Main Content */}
       <div className='grid grid-cols-1 lg:grid-cols-3  gap-6 '>
         {/* Left Column - Property Info */}
@@ -247,7 +386,6 @@ const PropertyDetailPage = () => {
             <h1 className='text-3xl font-bold text-center mb-6'>
               About this Property
             </h1>
-
             <div className='mb-6 p-4'>
               <h2 className='text-2xl font-bold text-gray-800'>Elite Haven</h2>
               <div className='flex justify-between items-center mt-2'>
@@ -260,7 +398,6 @@ const PropertyDetailPage = () => {
                 <div className='text-red-500 font-bold text-xl'>£2,000</div>
               </div>
             </div>
-
             <div className='border-t-2 p-4 border-b-2 py-6 my-6'>
               <h3 className='text-xl font-bold mb-4'>Description</h3>
               <p className='text-gray-700 leading-relaxed'>
@@ -280,7 +417,6 @@ const PropertyDetailPage = () => {
                 Read More...
               </Button>
             </div>
-
             {/* Property Details Collapse */}
             <div className='flex flex-col py-2  border-b-2'>
               <Collapse
@@ -382,7 +518,6 @@ const PropertyDetailPage = () => {
                             )}
                           </ul>
                         </div>
-
                         <div className=' px-4 border-b-2 border-l-2 pb-4'>
                           <h4 className='font-bold mt-4 mb-2'>
                             Features & Amenities
@@ -413,7 +548,7 @@ const PropertyDetailPage = () => {
                         Exterior
                       </div>
                       <div className='grid grid-cols-1 md:grid-cols-2 '>
-                      <div className='p-4'>
+                        <div className='p-4'>
                           <h4 className='font-bold mb-2'>Parking</h4>
                           <ul className='list-disc pl-5 space-y-1'>
                             <li>
@@ -449,7 +584,6 @@ const PropertyDetailPage = () => {
                 </Panel>
               </Collapse>
             </div>
-
             {/* Nearby Places Collapse */}
             <div className='flex flex-col py-2  border-b-2 mb-10'>
               <Collapse
@@ -471,7 +605,6 @@ const PropertyDetailPage = () => {
                     <div className='relative w-full h-80 bg-gray-200 rounded-lg overflow-hidden mb-4'>
                       <MapUrl />
                     </div>
-
                     <Radio.Group
                       defaultValue='restaurants'
                       buttonStyle='solid'
@@ -492,7 +625,6 @@ const PropertyDetailPage = () => {
                         }
                       }))}
                     />
-
                     <div className='grid grid-cols-1 md:grid-cols-2 border-t'>
                       {nearbyPlaces
                         ?.filter(place =>
@@ -568,15 +700,87 @@ const PropertyDetailPage = () => {
               </Collapse>
             </div>
           </Card>
+          {!isLiked && (
+            <>
+              <NegotiateSection
+                negotiationState={negotiationState}
+                offerAmount={offerAmount}
+                counterOfferAmount={counterOfferAmount}
+                specialRequests={specialRequests}
+                onMakeOffer={handleMakeOffer}
+                onAcceptOffer={handleAcceptOffer}
+                onRejectOffer={handleRejectOffer}
+                onCounterOffer={handleCounterOffer}
+                onSendMessage={() => setMessageModalVisible(true)}
+                onRequestCallBack={() => console.log('Request call back')}
+                offerHistory={offerHistory}
+              />
+              {/* Other Offers Summary */}
+              <Card className='mb-6 border border-[#E0E0E0] shadow-sm'>
+                <div className='mb-4'>
+                  <h2 className='text-2xl font-bold'>Other Offers Summary</h2>
+                  <p className='text-gray-600'>
+                    See what other buyers are offering for this property
+                  </p>
+                </div>
+                <div className='space-y-4'>
+                  <div className='flex justify-between'>
+                    <span className='font-medium'>Total Offers:</span>
+                    <span className='font-medium'>3 Offers</span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span className='font-medium'>Highest Offer:</span>
+                    <span className='font-medium text-green-600'>£200,000</span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span className='font-medium'>Lowest Offer:</span>
+                    <span className='font-medium'>£190,000</span>
+                  </div>
+                  <div className='mt-4'>
+                    <h4 className='font-medium mb-2'>Offer Distribution:</h4>
+                    <div className='space-y-4'>
+                      <div className='flex items-center gap-4'>
+                        <div
+                          className='bg-green-500 h-5 rounded flex-grow'
+                          style={{ width: '66%' }}
+                        ></div>
+                        <div className='flex items-center gap-2 whitespace-nowrap'>
+                          <span className='text-sm'>£190k-£200k</span>
+                          <span className='text-sm font-medium'>2</span>
+                        </div>
+                      </div>
+                      <div className='flex items-center gap-4'>
+                        <div
+                          className='bg-blue-400 h-5 rounded flex-grow'
+                          style={{ width: '33%' }}
+                        ></div>
+                        <div className='flex items-center gap-2 whitespace-nowrap'>
+                          <span className='text-sm'>£200k-£210k</span>
+                          <span className='text-sm font-medium'>1</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+              {/* <div className="mt-8 p-4 bg-gray-100 rounded-lg">
+           <h3 className="font-bold mb-2">Demo Controls</h3>
+           <p className="mb-4">Click the button below to cycle through different negotiation states:</p>
+           <Button onClick={cycleNegotiationState}>
+             Change Negotiation State (Current: {negotiationState || "none"})
+           </Button>
+         </div> */}
+            </>
+          )}
         </div>
-
         {/* Right Column - Schedule Tour */}
         <div className='lg:col-span-1 sticky top-4 self-start'>
+          {isFavorite && <InterestInProperty handleMakeOffer={()=> setMakeOfferModalVisible(true)} />}
+
           <Card className='border border-[#E0E0E0]  shadow-[0px_4px_4px_0px_#00000040]'>
             <h2 className='text-2xl font-bold text-center mb-6'>
               Schedule a Tour
             </h2>
-
             <Form form={form} layout='vertical' onFinish={onFinish}>
               <Form.Item
                 name='name'
@@ -589,7 +793,6 @@ const PropertyDetailPage = () => {
                   className={css + ' dp'}
                 />
               </Form.Item>
-
               <Form.Item
                 name='email'
                 label='Email'
@@ -603,12 +806,14 @@ const PropertyDetailPage = () => {
                   className={css + ' dp'}
                 />
               </Form.Item>
-
               <Form.Item
                 name='phone'
                 label={<p className='font-medium'>Phone Number</p>}
                 rules={[
-                  { required: true, message: 'Please enter your phone number' },
+                  {
+                    required: true,
+                    message: 'Please enter your phone number'
+                  },
                   {
                     pattern: /^[0-9]+$/,
                     message: 'The phone number must not contain any letters'
@@ -666,7 +871,6 @@ const PropertyDetailPage = () => {
                   placeholder='(000) 000 0000'
                 />
               </Form.Item>
-
               <Form.Item name='message' label='Message'>
                 <Input.TextArea
                   rows={1}
@@ -674,7 +878,6 @@ const PropertyDetailPage = () => {
                   className={css + ' dp'}
                 />
               </Form.Item>
-
               <Form.Item
                 name='date'
                 label='Date'
@@ -687,7 +890,6 @@ const PropertyDetailPage = () => {
                   suffixIcon={<CalendarOutlined />}
                 />
               </Form.Item>
-
               <Form.Item
                 name='time'
                 label='Time'
@@ -722,7 +924,6 @@ const PropertyDetailPage = () => {
                   <Option value='17:00'>5:00 pm</Option>
                 </Select>
               </Form.Item>
-
               <Form.Item>
                 <Button
                   type='primary'
@@ -736,6 +937,18 @@ const PropertyDetailPage = () => {
           </Card>
         </div>
       </div>
+      <MessageModal
+        visible={messageModalVisible}
+        onCancel={() => setMessageModalVisible(false)}
+        onSend={handleSendMessage}
+        propertyTitle={property?.title}
+      />
+      <MakeOfferModal
+        visible={makeOfferModalVisible}
+        onCancel={() => setMakeOfferModalVisible(false)}
+        onSubmit={handleSubmitOffer}
+        propertyPrice={property?.price?.replace('/mo', '')}
+      />
     </div>
   )
 }

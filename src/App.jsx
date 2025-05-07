@@ -1,4 +1,4 @@
-import { Outlet, Route, Routes } from 'react-router-dom'
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import LandingPage from './pages/landingPage'
 import AboutPage from './pages/about'
 import ContactUsPage from './pages/contactUs'
@@ -34,13 +34,65 @@ import AssignJobDetail from './pages/assignJobDetail'
 import JobHistory from './pages/jobHistory'
 import JobHistoryDetail from './pages/jobHistoryDetail'
 import Announcement from './pages/announcement'
+import { useAuth } from './context/useAuth'
+import ClientDashboard from './pages/clientDashboard'
+import ServicesHub from './pages/servicesHub'
+import ClientProfile from './pages/clientProfile'
+import ClientChats from './pages/clientChats'
+import ClientChatTemplate from './pages/clientChatTemplate'
+import ChatView from './components/clientPortal/messages/chatView'
+import UserProfile from './pages/userProfile'
+import RegisterPage from './pages/registerPage'
+import ToolsPage from './pages/tools'
+import ClientPropertiesHubPage from './pages/clientPropertiesHubPage'
+import DealsRoom from './pages/clientDealsRoomPage'
+import LikedProperties from './pages/clientLikedPropertiesPage'
+import LikedPropertiesDetailPage from './pages/likedPropertiesDetailPage'
+import DealsRoomDetailPage from './pages/dealsRoomDetailPage'
+import ViewAllPropertiesListing from './pages/viewAllPropertiesListing'
+
+const ProtectedRoute = ({ children, roles }) => {
+  const { user } = useAuth()
+
+  if (!user) {
+    return <Navigate to='/login' replace />
+  }
+
+  if (roles && !roles.includes(user.role)) {
+    return <Navigate to='/' replace />
+  }
+
+  return children
+}
+
+const AuthenticatedLayout = ({ role }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { user } = useAuth()
+
+  const SidebarComponent = Sidebar
+  const HeaderComponent = Header
+  // const SidebarComponent = role === 'staff' ? Sidebar : ClientSidebar
+  // const HeaderComponent = role === 'staff' ? Header : ClientHeader
+
+  return (
+    <div className='flex h-screen bg-gray-50'>
+      <SidebarComponent
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
+      <div className='flex-1 overflow-auto'>
+        <HeaderComponent
+          user={user}
+          handleSidebar={() => setSidebarOpen(prev => !prev)}
+        />
+        <Outlet />
+      </div>
+    </div>
+  )
+}
 
 function App () {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [user, setUser] = useState({
-    name: 'John Doe',
-    avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
-  })
+  const { user, setUser } = useAuth()
   return (
     <Routes>
       <Route
@@ -58,25 +110,29 @@ function App () {
         <Route path='/careers' element={<Careers />} />
         <Route path='/properties-hub' element={<PropertiesHub />} />
         <Route path='/properties' element={<Properties />} />
-        <Route path='/property/:id' element={<PropertyDetailPage />} />
+        <Route
+          path='/property/:id'
+          element={
+            <div className='max-w-7xl w-full mx-auto p-4 bg-white'>
+              <PropertyDetailPage />
+            </div>
+          }
+        />
         <Route path='/blogs' element={<BlogPage />} />
         <Route path='/blog/:id' element={<BlogPostDetail />} />
         <Route path='/account' element={<AccountPage />} />
       </Route>
-      <Route path='/register' element={<Register />} />
+      <Route path='/register-list' element={<Register />} />
+      <Route path='/register' element={<RegisterPage />} />
       <Route path='/login' element={<Login />} />
       <Route path='/signup' element={<SignUp />} />
 
       <Route
         path='staff'
         element={
-          <div className='flex h-screen bg-gray-50'>
-            <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
-            <div className='flex-1 overflow-auto'>
-              <Header user={user} handleSidebar={()=>setSidebarOpen(prev=>!prev)} />
-              <Outlet />
-            </div>
-          </div>
+          <ProtectedRoute roles={['staff']}>
+            <AuthenticatedLayout role='staff' />
+          </ProtectedRoute>
         }
       >
         <Route path='dashboard' element={<StaffDashboard />} />
@@ -88,15 +144,15 @@ function App () {
         />
 
         <Route path='jobs'>
-          <Route path='current' >
+          <Route path='current'>
             <Route index element={<CurrentJobs />} />
             <Route path=':id' element={<CurrentJobDetail />} />
           </Route>
-          <Route path='assign' >
+          <Route path='assign'>
             <Route index element={<AssignJobs />} />
             <Route path=':id' element={<AssignJobDetail />} />
           </Route>
-          <Route path='history' >
+          <Route path='history'>
             <Route index element={<JobHistory />} />
             <Route path=':id' element={<JobHistoryDetail />} />
           </Route>
@@ -108,6 +164,38 @@ function App () {
         <Route path='announcements' element={<AnnouncementsPage />} />
         <Route path='announcements/:id' element={<Announcement />} />
       </Route>
+      <Route
+        path='client'
+        element={
+          <ProtectedRoute roles={['client']}>
+            <AuthenticatedLayout role='client' />
+          </ProtectedRoute>
+        }
+      >
+        <Route path='dashboard' element={<ClientDashboard />} />
+        <Route path='services-hub' element={<ServicesHub />} />
+        <Route path='properties-hub' element={<Outlet />}>
+          <Route index element={<ClientPropertiesHubPage />} />
+          <Route path='all' element={<ViewAllPropertiesListing />} />
+
+          <Route path='deals-room' element={<Outlet />}>
+            <Route index element={<DealsRoom />} />
+            <Route path=':id' element={<DealsRoomDetailPage />} />
+          </Route>
+          <Route path='liked-properties' element={<Outlet />}>
+            <Route index element={<LikedProperties />} />
+            <Route path=':id' element={<LikedPropertiesDetailPage />} />
+          </Route>
+        </Route>
+        <Route path='tools' element={<ToolsPage />} />
+        <Route path='chats' element={<ClientChatTemplate />}>
+          <Route index element={<ClientChats />} />
+          <Route path=':id' element={<ChatView />} />
+          <Route path='user-profile/:id' element={<UserProfile />} />
+        </Route>
+        <Route path='profile' element={<ClientProfile />} />
+      </Route>
+
       <Route path='*' element={<h1>404 Not Found</h1>} />
     </Routes>
   )

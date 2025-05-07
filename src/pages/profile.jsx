@@ -4,8 +4,10 @@ import ProfileTab from '../components/staffPanel/profile/profileTab'
 import EditProfileForm from '../components/staffPanel/profile/editProfileForm'
 import VerificationsTab from '../components/staffPanel/profile/verificationsTab'
 import RatingsReviewsTab from '../components/staffPanel/profile/ratingsReviewsTab'
+import { useAuth } from '../context/useAuth'
 
-const Profile = ({ user, setUser }) => {
+const Profile = () => {
+  const {user, setUser} = useAuth()
   const [activeTab, setActiveTab] = useState('edit')
 
   const handleTabChange = tab => {

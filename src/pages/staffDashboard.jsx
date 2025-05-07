@@ -4,10 +4,7 @@ import Dashboard from '../components/staffPanel/dashboard/dashboard'
 import Header from '../components/staffPanel/dashboard/header'
 
 const StaffDashboard = () => {
-  const [user, setUser] = useState({
-    name: 'John Doe',
-    avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
-  })
+ 
 
   const [stats, setStats] = useState({
     weeklyEarnings: 450.0,
@@ -18,7 +15,7 @@ const StaffDashboard = () => {
 
   return (
   
-        <Dashboard user={user} stats={stats} />
+        <Dashboard  stats={stats} />
      
   )
 }
