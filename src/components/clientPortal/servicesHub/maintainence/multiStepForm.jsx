@@ -1,7 +1,7 @@
 // src/components/MaintenanceService/MultiStepForm.jsx
 import React, { useState, useEffect } from 'react';
 import StepIndicator from './stepIndicator';
-import FormStep from './dormStep';
+import FormStep from './formStep';
 import { getFormSteps } from '../../../../data/formStepsData';
 
 const MultiStepForm = ({ service, packageType, onBack, onSubmit }) => {
