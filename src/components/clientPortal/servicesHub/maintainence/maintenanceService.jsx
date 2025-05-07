@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import ServiceSelection from './ServiceSelection';
-import PackageSelection from './PackageSelection';
-import MultiStepForm from './MultiStepForm';
+import ServiceSelection from './serviceSelection';
+import PackageSelection from './packageSelection';
+import MultiStepForm from './multiStepForm';
 
 const MaintenanceService = () => {
   const [currentScreen, setCurrentScreen] = useState('serviceSelect');

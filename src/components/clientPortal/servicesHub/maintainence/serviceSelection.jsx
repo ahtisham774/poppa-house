@@ -1,6 +1,6 @@
 // src/components/MaintenanceService/ServiceSelection.jsx
 import React from 'react';
-import ServiceCard from './ServiceCard';
+import ServiceCard from './serviceCard';
 import { maintenanceServices } from '../../../../data/maintenanceData';
 
 const ServiceSelection = ({ onSelectService }) => {
