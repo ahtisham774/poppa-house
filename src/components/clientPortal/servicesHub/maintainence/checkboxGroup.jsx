@@ -1,6 +1,6 @@
 // src/components/MaintenanceService/CheckboxGroup.jsx
 import React from 'react';
-import FormField from './FormField';
+import FormField from './formField';
 import RenderFields from './renderFields';
 
 const CheckboxGroup = ({ field, formData, onChange, onNestedChange }) => {

@@ -1,6 +1,6 @@
 // src/components/MaintenanceService/PackageSelection.jsx
 import React from 'react';
-import PackageCard from './PackageCard';
+import PackageCard from './packageCard';
 import { packageTypes } from '../../../../data/maintenanceData';
 
 const PackageSelection = ({ service, onSelectPackage, onBack }) => {

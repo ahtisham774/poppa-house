@@ -1,5 +1,5 @@
 import CheckboxGroup from "./checkboxGroup"
-import FormField from "./FormField"
+import FormField from "./formField"
 import RadioGroup from "./radioGroup"
 import DynamicRoomTypes from "./roomTypeSection"
 
