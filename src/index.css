@@ -356,3 +356,21 @@ body {
 :where(.css-dev-only-do-not-override-1v613y0).ant-collapse>.ant-collapse-item .ant-collapse-collapsible-header .ant-collapse-header-text {
   flex: auto !important
 }
+
+.submenu-item {
+  position: relative;
+}
+
+.submenu-item::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  width: 10px;
+  height: 1.5px;
+  background-color: #cbcdcf;
+}
+
+.submenu-item.active::before {
+  background-color: #6b7280;
+}

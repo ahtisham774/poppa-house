@@ -1,46 +1,44 @@
 import React, { useState } from 'react'
+import CardLayout from '../../clientPortal/activities/cardLayout'
 
 const ScheduleDateTime = () => {
-    const [selectedDate, setSelectedDate] = useState(null);
-    const [selectedTime, setSelectedTime] = useState("");
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [showTimePicker, setShowTimePicker] = useState(false);
-  
-    const handleDateChange = (e) => {
-      setSelectedDate(new Date(e.target.value));
-      setShowDatePicker(false);
-    };
-  
-    const handleTimeChange = (e) => {
-      setSelectedTime(e.target.value);
-      setShowTimePicker(false);
-    };
-  
-    const handleConfirm = () => {
-      if (!selectedDate) {
-        alert("Please select a date");
-        return;
-      }
-      if (!selectedTime) {
-        alert("Please select a time");
-        return;
-      }
-  
-      const dateTimeInfo = {
-        date: selectedDate ,
-        time: selectedTime
-      };
-      
-      console.log('Date and time confirmed:', dateTimeInfo);
-      alert(`Schedule confirmed for ${dateTimeInfo.date} at ${dateTimeInfo.time}`);
-      // Additional logic for backend submission would go here
-    };
+  const [selectedDate, setSelectedDate] = useState(null)
+  const [selectedTime, setSelectedTime] = useState('')
+  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [showTimePicker, setShowTimePicker] = useState(false)
+
+  const handleDateChange = e => {
+    setSelectedDate(new Date(e.target.value))
+    setShowDatePicker(false)
+  }
+
+  const handleTimeChange = e => {
+    setSelectedTime(e.target.value)
+    setShowTimePicker(false)
+  }
+
+  const handleConfirm = () => {
+    if (!selectedDate) {
+      alert('Please select a date')
+      return
+    }
+    if (!selectedTime) {
+      alert('Please select a time')
+      return
+    }
+
+    const dateTimeInfo = {
+      date: selectedDate,
+      time: selectedTime
+    }
+
+    console.log('Date and time confirmed:', dateTimeInfo)
+    alert(`Schedule confirmed for ${dateTimeInfo.date} at ${dateTimeInfo.time}`)
+    // Additional logic for backend submission would go here
+  }
   return (
-    <div className='bg-white rounded-lg border border-gray-200  mt-6 sm:mt-8'>
-      <div className='border-b border-gray-200 p-4'>
-        <h3 className='text-xl font-medium'>Schedule Date & Time</h3>
-      </div>
-      <div className='p-6 '>
+    <CardLayout title='Schedule Date & Time'>
+      <div className=''>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div className='relative'>
             <button
@@ -83,15 +81,14 @@ const ScheduleDateTime = () => {
             </button>
             {showDatePicker && (
               <div className='absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-4'>
-                <input 
-                  type="date" 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                <input
+                  type='date'
+                  className='w-full px-3 py-2 border border-gray-300 rounded-md'
                   onChange={handleDateChange}
                   min={new Date().toISOString().split('T')[0]} // Today as the minimum date
                 />
               </div>
             )}
-           
           </div>
 
           <div className='relative'>
@@ -135,14 +132,16 @@ const ScheduleDateTime = () => {
             </button>
             {showTimePicker && (
               <div className='absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-4'>
-                <input 
-                  type="time" 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                <input
+                  type='time'
+                  className='w-full px-3 py-2 border border-gray-300 rounded-md'
                   onChange={handleTimeChange}
-                  min="09:00"
-                  max="18:00"
+                  min='09:00'
+                  max='18:00'
                 />
-                <p className="text-xs text-gray-500 mt-2">Business hours: 9:00 AM - 6:00 PM</p>
+                <p className='text-xs text-gray-500 mt-2'>
+                  Business hours: 9:00 AM - 6:00 PM
+                </p>
               </div>
             )}
           </div>
@@ -155,7 +154,7 @@ const ScheduleDateTime = () => {
           Confirm
         </button>
       </div>
-    </div>
+    </CardLayout>
   )
 }
 

@@ -59,14 +59,14 @@ const FormField = ({ field, value, onChange }) => {
         );
       case 'checkbox':
         return (
-          <label className="inline-flex items-center cursor-pointer">
+          <label className="inline-flex items-start cursor-pointer">
             <input
               type="checkbox"
               name={name}
               checked={!!value}
               onChange={handleChange}
               disabled={disabled}
-              className="relative mr-2 appearance-none size-4 border-2 border-[#131e47] rounded-full checked:bg-white focus:outline-none focus:ring-0 transition-colors duration-200"
+              className="relative shrink-0 mr-2 mt-1 appearance-none size-4 border-2 border-[#131e47] rounded-full checked:bg-white focus:outline-none focus:ring-0 transition-colors duration-200"
               style={{
                 backgroundImage: value ? 'radial-gradient(circle, #131e47 0%, #131e47 40%, white 40%, white 100%)' : 'none'
               }}

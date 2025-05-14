@@ -212,7 +212,7 @@ const FilterBar = ({
         </button>
         <button
           onClick={onApplyFilters}
-          className='px-4 py-2 bg-accent rounded-md text-gray-900 font-medium focus:outline-none hover:bg-yellow-500'
+          className='px-4 py-2 bg-accent rounded-md text-gray-900 font-medium focus:outline-none hover:bg-yellow-300'
         >
           Apply Filter
         </button>

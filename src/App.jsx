@@ -50,6 +50,10 @@ import LikedProperties from './pages/clientLikedPropertiesPage'
 import LikedPropertiesDetailPage from './pages/likedPropertiesDetailPage'
 import DealsRoomDetailPage from './pages/dealsRoomDetailPage'
 import ViewAllPropertiesListing from './pages/viewAllPropertiesListing'
+import ClientActivitiesPage from './pages/clientActivities'
+import PageLayout from './components/common/pageLayout'
+import ViewClientActivity from './pages/viewClientActivity'
+import HelpAndSupport from './pages/helpAndSupport'
 
 const ProtectedRoute = ({ children, roles }) => {
   const { user } = useAuth()
@@ -188,6 +192,19 @@ function App () {
           </Route>
         </Route>
         <Route path='tools' element={<ToolsPage />} />
+        <Route
+          path='activities'
+          element={
+            <PageLayout
+              title='Activities'
+              description='Track and manage all your property-related activities'
+            />
+          }
+        >
+          <Route index element={<ClientActivitiesPage />} />
+          <Route path=':id' element={<ViewClientActivity />} />
+        </Route>
+        <Route path='support' element={<HelpAndSupport />} />
         <Route path='chats' element={<ClientChatTemplate />}>
           <Route index element={<ClientChats />} />
           <Route path=':id' element={<ChatView />} />
