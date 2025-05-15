@@ -79,12 +79,12 @@ const AuthenticatedLayout = ({ role }) => {
   // const HeaderComponent = role === 'staff' ? Header : ClientHeader
 
   return (
-    <div className='flex h-screen bg-gray-50'>
+    <div className='flex min-h-screen bg-gray-50'>
       <SidebarComponent
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
       />
-      <div className='flex-1 overflow-auto'>
+      <div className='flex-1 overflow-auto h-[calc(100vh-0.5rem)]'>
         <HeaderComponent
           user={user}
           handleSidebar={() => setSidebarOpen(prev => !prev)}

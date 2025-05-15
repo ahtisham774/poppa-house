@@ -1,64 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
+import CardView from './cardView'
 
 const NotificationsCard = () => {
   const [notifications] = useState([
     {
       id: 1,
       title: 'New Training Materials Available',
-      description: 'Access the latest property management training materials in the PHIC section.',
+      description:
+        'Access the latest property management training materials in the PHIC section.',
       date: '2/15/2025'
     },
     {
       id: 2,
       title: 'New Training Materials Available',
-      description: 'Access the latest property management training materials in the PHIC section.',
+      description:
+        'Access the latest property management training materials in the PHIC section.',
       date: '2/15/2025'
     },
     {
       id: 3,
       title: 'Company Policy Updates',
-      description: 'Important changes to remote work policies have been implemented.',
+      description:
+        'Important changes to remote work policies have been implemented.',
       date: '2/15/2025'
     }
-  ]);
+  ])
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-100 p-6">
-      <div className="flex justify-between items-center mb-4">
-      <h2 className="text-xl font-medium text-gray-900">Company Notifications</h2>
-      <a href="#" className="flex items-center text-sm ">
-          View All
-          <svg
-            className="ml-1 h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </a>
-      </div>
+    <CardView
+      title='Notifications'
+      icon={
+        <svg
+          width='26'
+          height='26'
+          viewBox='0 0 26 26'
+          fill='none'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          <path
+            d='M11.1229 22.7493C11.313 23.0787 11.5866 23.3522 11.9159 23.5423C12.2453 23.7325 12.6189 23.8326 12.9992 23.8326C13.3795 23.8326 13.7531 23.7325 14.0825 23.5423C14.4119 23.3522 14.6854 23.0787 14.8755 22.7493M3.53304 16.6025C3.39152 16.7576 3.29813 16.9505 3.26422 17.1577C3.23031 17.365 3.25735 17.5776 3.34206 17.7697C3.42676 17.9618 3.56547 18.1252 3.74132 18.2399C3.91717 18.3547 4.12257 18.4159 4.33254 18.416H21.6659C21.8758 18.4161 22.0813 18.3552 22.2572 18.2406C22.4332 18.1261 22.5721 17.9629 22.657 17.7709C22.7419 17.5789 22.7692 17.3664 22.7356 17.1591C22.702 16.9519 22.6088 16.7589 22.4675 16.6036C21.0267 15.1183 19.4992 13.5399 19.4992 8.66602C19.4992 6.94211 18.8144 5.28881 17.5954 4.06982C16.3764 2.85084 14.7231 2.16602 12.9992 2.16602C11.2753 2.16602 9.622 2.85084 8.40301 4.06982C7.18403 5.28881 6.49921 6.94211 6.49921 8.66602C6.49921 13.5399 4.97063 15.1183 3.53304 16.6025Z'
+            stroke='#131E47'
+            strokeWidth='2.66667'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+          />
+        </svg>
+      }
+      list={notifications}
+      viewAll={null}
+    />
+  )
+}
 
-      <div className="space-y-4">
-        {notifications.map(notification => (
-          <div key={notification.id} className="border-b border-[#D5D5D5] pb-4 mb-2 last:border-b-0 last:pb-0 last:mb-0">
-            <div className="flex justify-between mb-1">
-            <h3 className="text-base font-medium text-gray-900">{notification.title}</h3>
-              <span className="text-xs text-[#888888]">
-                {notification.date}
-              </span>
-            </div>
-            <p className="text-sm text-[#505050] max-w-sm">{notification.description}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default NotificationsCard;
+export default NotificationsCard

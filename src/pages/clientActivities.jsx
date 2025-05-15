@@ -160,10 +160,115 @@ export const ongoingActivities = [
   }
 ]
 
+export const RenderOngoingActivityCard = ({activity, i}) => {
+  const navigate = useNavigate()
+  const handleViewDetail = id => {
+    navigate(`/client/activities/${id}`)
+  }
+  return (
+    <div key={i} className='bg-white rounded-lg br p-5 mb-4'>
+      <div className='flex flex-col w-full gap-2 mb-2'>
+        <span className='text-sm text-[#888888] self-end'>{activity.id}</span>
+        <div>
+          <h3 className='text-xl font-medium text-gray-900'>
+            {activity.title}
+          </h3>
+          <p className='text-sm text-[#888888]'>{activity.subtitle}</p>
+        </div>
+      </div>
+
+      <StatusBadge status={activity.status} />
+
+      <div className='space-y-2 mb-3 '>
+        {activity.location && <Address text={activity.location} />}
+
+        {activity.isEmergency ? <EmergencyStatus /> : null}
+
+        {activity.requestStatus && (
+          <ProgressHelper text={activity.requestStatus} />
+        )}
+
+        {activity.nextServiceDate && (
+          <ServiceDate text={activity.nextServiceDate} />
+        )}
+
+        {activity.nextServiceDue && (
+          <ProgressHelper text={activity.nextServiceDue} />
+        )}
+
+        {activity.nextPaymentDate && (
+          <ServiceDate text={activity.nextPaymentDate} />
+        )}
+
+        {activity.bundleStatus && (
+          <ProgressHelper text={activity.bundleStatus} />
+        )}
+
+        {activity.activeStatus && (
+          <ProgressHelper text={activity.activeStatus} />
+        )}
+
+        {activity.tourDate && <ServiceDate text={activity.tourDate} />}
+
+        {activity.viewingStatus && (
+          <ProgressHelper text={activity.viewingStatus} />
+        )}
+
+        <Assignee text={activity.assignee} />
+      </div>
+
+      <div className='mb-4'>
+        <div className='flex justify-between text-sm mb-1'>
+          <span>Progress</span>
+          <span>{activity.progress}%</span>
+        </div>
+        <Progress
+          percent={activity.progress}
+          showInfo={false}
+          strokeColor='#00BFFF'
+          trailColor='#e6e6e6'
+          strokeWidth={8}
+        />
+      </div>
+
+      <div className='flex space-x-2'>
+        {activity.buttons ? (
+          <>
+            <DetailButton
+              text={activity.buttons[0]}
+              onClick={() => {
+                handleViewDetail(i)
+              }}
+            />
+            <DetailButton text={activity.buttons[1]} onClick={() => {}} />
+          </>
+        ) : activity?.title?.includes('Property Viewing') ||
+          activity?.title?.includes('Property Search') ? (
+          <>
+            <DetailButton
+              text={'View Details'}
+              onClick={() => {
+                handleViewDetail(i)
+              }}
+            />
+            <DetailButton text={'Message Agent'} onClick={() => {}} />
+          </>
+        ) : activity?.title?.includes('Cleaning') ||
+          activity?.title?.includes('Gardening') ||
+          activity?.title?.includes('Repairs') ? (
+          <>
+            <DetailButton text={'View Quote'} onClick={() => {}} />
+            <DetailButton text={'Message Staff'} onClick={() => {}} />
+          </>
+        ) : null}
+      </div>
+    </div>
+  )
+}
 const ActivitiesPage = () => {
   const [activeTab, setActiveTab] = useState('ongoing')
   const [viewMode, setViewMode] = useState('grid')
-  const navigate = useNavigate()
+
   const [filteredActivities, setFilteredActivities] = useState([])
   const [filters, setFilters] = useState({
     search: '',
@@ -178,9 +283,6 @@ const ActivitiesPage = () => {
   ]
 
   // Mock data for ongoing activities
-  const handleViewDetail = id => {
-    navigate(`/client/activities/${id}`)
-  }
 
   // Mock data for history activities
   const historyActivities = [
@@ -402,102 +504,6 @@ const ActivitiesPage = () => {
     console.log('Filters applied')
   }
   // Render ongoing activity card
-  const renderOngoingActivityCard = (activity, i) => (
-    <div key={i} className='bg-white rounded-lg br p-5 mb-4'>
-      <div className='flex flex-col w-full gap-2 mb-2'>
-        <span className='text-sm text-[#888888] self-end'>{activity.id}</span>
-        <div>
-          <h3 className='text-xl font-medium text-gray-900'>
-            {activity.title}
-          </h3>
-          <p className='text-sm text-[#888888]'>{activity.subtitle}</p>
-        </div>
-      </div>
-
-      <StatusBadge status={activity.status} />
-
-      <div className='space-y-2 mb-3 '>
-        {activity.location && <Address text={activity.location} />}
-
-        {activity.isEmergency ? <EmergencyStatus /> : null}
-
-        {activity.requestStatus && (
-          <ProgressHelper text={activity.requestStatus} />
-        )}
-
-        {activity.nextServiceDate && (
-          <ServiceDate text={activity.nextServiceDate} />
-        )}
-
-        {activity.nextServiceDue && (
-          <ProgressHelper text={activity.nextServiceDue} />
-        )}
-
-        {activity.nextPaymentDate && (
-          <ServiceDate text={activity.nextPaymentDate} />
-        )}
-
-        {activity.bundleStatus && (
-          <ProgressHelper text={activity.bundleStatus} />
-        )}
-
-        {activity.activeStatus && (
-          <ProgressHelper text={activity.activeStatus} />
-        )}
-
-        {activity.tourDate && <ServiceDate text={activity.tourDate} />}
-
-        {activity.viewingStatus && (
-          <ProgressHelper text={activity.viewingStatus} />
-        )}
-
-        <Assignee text={activity.assignee} />
-      </div>
-
-      <div className='mb-4'>
-        <div className='flex justify-between text-sm mb-1'>
-          <span>Progress</span>
-          <span>{activity.progress}%</span>
-        </div>
-        <Progress
-          percent={activity.progress}
-          showInfo={false}
-          strokeColor='#00BFFF'
-          trailColor='#e6e6e6'
-          strokeWidth={8}
-        />
-      </div>
-
-      <div className='flex space-x-2'>
-        {activity.buttons ? (
-          <>
-            <DetailButton text={activity.buttons[0]}   onClick={() => {
-                handleViewDetail(i)
-              }} />
-            <DetailButton text={activity.buttons[1]} onClick={() => {}} />
-          </>
-        ) : activity.title.includes('Property Viewing') ||
-          activity.title.includes('Property Search') ? (
-          <>
-            <DetailButton
-              text={'View Details'}
-              onClick={() => {
-                handleViewDetail(i)
-              }}
-            />
-            <DetailButton text={'Message Agent'} onClick={() => {}} />
-          </>
-        ) : activity.title.includes('Cleaning') ||
-          activity.title.includes('Gardening') ||
-          activity.title.includes('Repairs') ? (
-          <>
-            <DetailButton text={'View Quote'} onClick={() => {}} />
-            <DetailButton text={'Message Staff'} onClick={() => {}} />
-          </>
-        ) : null}
-      </div>
-    </div>
-  )
 
   // Render history activity card
   const renderHistoryActivityCard = (activity, i) => (
@@ -578,7 +584,7 @@ const ActivitiesPage = () => {
           // Render ongoing activities
           <>
             {filteredActivities?.map((activity, i) =>
-              renderOngoingActivityCard(activity, i)
+            ( <RenderOngoingActivityCard key={i} activity={activity} i={i} />)
             )}
           </>
         ) : (

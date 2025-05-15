@@ -534,7 +534,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           </div>
 
           {/* Navigation */}
-          <div className='flex-1 overflow-y-auto hide-scrollbar'>
+          <div className='flex-1  max-h-[calc(100dvh-112px)] overflow-y-auto hide-scrollbar'>
             {sidebarItems.map((section, sectionIndex) => (
               <div key={sectionIndex}>
                 <div className='pt-4 pb-2'>

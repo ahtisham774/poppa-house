@@ -6,7 +6,7 @@ const PropertyViewBanner = ({ job }) => {
   return (
     <div className='bg-[#EFF6FF] border border-[#D3E6FF] p-4 sm:p-5 py-6 sm:py-8 rounded-lg mb-4 sm:mb-6 relative'>
       <div className='flex flex-col sm:flex-row sm:items-center gap-4 '>
-        <BackButton onClick={() => navigate('/staff/jobs/history')} />
+        <BackButton onClick={() => navigate(-1)} />
         <div className='border-l-2 border-[#b1b1b19a] '>
           <div className='ml-0 sm:ml-4 mt-3 sm:mt-0'>
             <h2 className='text-xl sm:text-2xl font-semibold'>{job.title}</h2>
