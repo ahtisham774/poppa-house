@@ -24,7 +24,7 @@ const Header = ({ user, handleSidebar }) => {
           <input
             type='text'
             placeholder='Search for something'
-            className='md:w-72 pl-12 pr-4 py-2 rounded-full  bg-[#F5F7FA] text-[#8BA3CB] placeholder:text-[#8BA3CB]  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+            className='!w-full lg:w-72 pl-12 pr-4 py-2 rounded-full  bg-[#F5F7FA] text-[#8BA3CB] placeholder:text-[#8BA3CB]  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
           />
           <svg
             className='absolute left-5 top-2.5 h-5 w-5 text-[#8BA3CB]'
