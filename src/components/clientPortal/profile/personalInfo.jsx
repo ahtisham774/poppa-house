@@ -1,29 +1,34 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../../../context/useAuth'
 import VerifiedBadge from './verifiedBadge'
+import clientProfileService from '../../../api/services/clientProfileService'
+import { showToast } from '../../../utils/toast'
+import Address from '../../common/address'
+import { DatePicker, Form } from 'antd'
 
-const PersonalInfo = () => {
-  const { user, setUser } = useAuth()
+import dayjs from 'dayjs'
 
+const PersonalInfo = ({ userData }) => {
+  const { user, handleUserUpdate } = useAuth()
+  const [loading, setLoading] = useState(false)
+  const [form] = Form.useForm()
   const [isVerified, setIsVerified] = useState({
     email: true,
     phone: true
   })
 
   const [formData, setFormData] = useState({
-    fullName: user?.name || 'John Doe',
-    email: 'john.doe@example.com',
-    phoneNumber: '+44 7700 900123',
-    dateOfBirth: '03/04/1999',
+    name: user?.name,
+    email: user?.email,
+    phoneNumber: user?.phoneNumber,
+    dob: user?.dob,
 
-    gender: 'Male',
-    presentAddress: 'San Jose, California, UK',
-    permanentAddress: 'San Jose, California, UK',
-    city: 'San Jose',
-    state: 'California',
-    postalCode: '45962',
-    country: 'United States'
+    gender: user?.gender
   })
+
+  useEffect(() => {
+    setFormData({ ...userData })
+  }, [userData])
 
   const [showAccountSecurity, setShowAccountSecurity] = useState(true)
   const [showResetPasswordModal, setShowResetPasswordModal] = useState(false)
@@ -37,14 +42,37 @@ const PersonalInfo = () => {
     }))
   }
 
-  const handleSubmit = e => {
-    e.preventDefault()
-    // Update user info
-    setUser(prev => ({
-      ...prev,
-      name: formData.fullName
-    }))
-    // Show success message or handle form submission logic
+  const handleSubmit = values => {
+    console.log('Form submitted:', values)
+
+    const updatedData = {
+      ...formData,
+      id: user?.id,
+      ...values
+    }
+    console.log('Updated data:', updatedData)
+    setLoading(true)
+
+    clientProfileService
+      .updateClientProfile(user?.id, updatedData)
+      .then(response => {
+        handleUserUpdate({
+          ...user,
+          name: formData?.name,
+          email: formData?.email,
+          phoneNumber: formData?.phoneNumber,
+          dob: formData?.dob
+        })
+        showToast('success', 'Profile updated successfully!')
+        setShowAccountSecurity(false)
+      })
+      .catch(error => {
+        console.error('Error updating client profile:', error)
+        showToast('error', 'Failed to update profile. Please try again.')
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   const handleResetPassword = () => {
@@ -88,19 +116,18 @@ const PersonalInfo = () => {
           </h2>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
+        <Form form={form} onFinish={handleSubmit}>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 items-end'>
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
                 Full Name
               </label>
               <input
                 type='text'
-                name='fullName'
-                value={formData.fullName}
+                name='name'
+                value={formData.name}
                 onChange={handleChange}
-                className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
-                required
+                className='w-full p-1 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
               />
             </div>
             <div>
@@ -115,13 +142,12 @@ const PersonalInfo = () => {
                 name='email'
                 value={formData.email}
                 onChange={handleChange}
-                className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
-                required
+                className='w-full p-1 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
               />
             </div>
           </div>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 items-end'>
             <div>
               <div className='flex items-center gap-2 mb-2'>
                 <label className='block text-sm font-medium text-gray-700 '>
@@ -134,8 +160,7 @@ const PersonalInfo = () => {
                 name='phoneNumber'
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
-                required
+                className='w-full p-1 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
               />
             </div>
             <div>
@@ -143,16 +168,20 @@ const PersonalInfo = () => {
                 Date of Birth
               </label>
               <div className='relative'>
-                <input
-                  type='text'
-                  name='dateOfBirth'
-                  value={formData.dateOfBirth}
-                  onChange={handleChange}
-                  className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
-                  required
+                <DatePicker
+                  name='dob'
+                    className='w-full p-1 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
+                  value={formData.dob ? dayjs(formData.dob) : null}
+                  onChange={(date, dateString) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      dob: dateString
+                    }))
+                  }}
+                  format='YYYY-MM-DD'
                 />
-                <svg
-                  className='absolute right-3 top-3 h-6 w-6 text-gray-400'
+                {/* <svg
+                  className='absolute right-3 top-1 px-3 h-6 w-6 text-gray-400'
                   fill='none'
                   stroke='currentColor'
                   viewBox='0 0 24 24'
@@ -163,11 +192,11 @@ const PersonalInfo = () => {
                     strokeWidth='2'
                     d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
                   />
-                </svg>
+                </svg> */}
               </div>
             </div>
           </div>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
+          {/* <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
                 Residential Address Line 1
@@ -177,8 +206,7 @@ const PersonalInfo = () => {
                 name='presentAddress'
                 value={formData.presentAddress}
                 onChange={handleChange}
-                className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
-                required
+                className='w-full p-1 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
               />
             </div>
             <div>
@@ -190,11 +218,10 @@ const PersonalInfo = () => {
                 name='permanentAddress'
                 value={formData.permanentAddress}
                 onChange={handleChange}
-                className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
-                required
+                className='w-full p-1 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
               />
             </div>
-          </div>
+          </div> */}
           {/* <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
             
             <div>
@@ -206,7 +233,7 @@ const PersonalInfo = () => {
                   name='gender'
                   value={formData.gender}
                   onChange={handleChange}
-                  className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary appearance-none'
+                  className='w-full p-1 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary appearance-none'
                   required
                 >
                   <option value='Male'>Male</option>
@@ -215,7 +242,7 @@ const PersonalInfo = () => {
                   <option value='Prefer not to say'>Prefer not to say</option>
                 </select>
                 <svg
-                  className='absolute right-3 top-3 h-6 w-6 text-gray-400 pointer-events-none'
+                  className='absolute right-3 top-1 px-3 h-6 w-6 text-gray-400 pointer-events-none'
                   fill='none'
                   stroke='currentColor'
                   viewBox='0 0 24 24'
@@ -231,7 +258,7 @@ const PersonalInfo = () => {
             </div>
           </div> */}
 
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
+          {/* <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
                 City
@@ -241,8 +268,7 @@ const PersonalInfo = () => {
                 name='city'
                 value={formData.city}
                 onChange={handleChange}
-                className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
-                required
+                className='w-full p-1 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
               />
             </div>
             <div>
@@ -254,12 +280,11 @@ const PersonalInfo = () => {
                 name='state'
                 value={formData.state}
                 onChange={handleChange}
-                className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
-                required
+                className='w-full p-1 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
               />
             </div>
-          </div>
-
+          </div> */}
+          {/* 
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
@@ -270,8 +295,7 @@ const PersonalInfo = () => {
                 name='postalCode'
                 value={formData.postalCode}
                 onChange={handleChange}
-                className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
-                required
+                className='w-full p-1 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
               />
             </div>
             <div>
@@ -283,11 +307,12 @@ const PersonalInfo = () => {
                 name='country'
                 value={formData.country}
                 onChange={handleChange}
-                className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
-                required
+                className='w-full p-1 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
               />
             </div>
-          </div>
+          </div> */}
+
+          <Address form={form} initialValues={userData?.address || {}} />
 
           <div className='flex justify-end gap-5'>
             <button className='border rounded-lg px-8 py-1 text-primary font-medium'>
@@ -295,12 +320,13 @@ const PersonalInfo = () => {
             </button>
             <button
               type='submit'
-              className='bg-primary text-white px-8 py-1 rounded-md font-medium hover:bg-primary/95 transition duration-200'
+              disabled={loading}
+              className='bg-primary disabled:cursor-not-allowed disabled:opacity-60 text-white px-8 py-1 rounded-md font-medium hover:bg-primary/95 transition duration-200'
             >
               Save Changes
             </button>
           </div>
-        </form>
+        </Form>
       </div>
     </>
   )

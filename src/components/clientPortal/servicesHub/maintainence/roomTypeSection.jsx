@@ -34,15 +34,15 @@ const DynamicRoomTypes = ({ formData, onChange }) => {
     onChange({ roomTypes: updatedRoomTypes })
   }
 
-  const handleServiceChange = (id, service, checked) => {
-    console.log('Service changed:', id, service, checked)
+  const handleServiceChange = (id,service ) => {
+  
     const updatedRoomTypes = roomTypes.map(room => {
       if (room.id == id) {
         return {
           ...room,
           cleaningServices: {
             ...room.cleaningServices,
-            [service]: checked
+            ...service
           }
         }
       }
@@ -174,9 +174,10 @@ const DynamicRoomTypes = ({ formData, onChange }) => {
                   disinfection: false
                 }
               }
-              onChange={(name, value) =>
-                handleServiceChange(roomType.id, name, value)
-              }
+              onChange={(value) => {
+               
+                handleServiceChange(roomType.id, value)
+              }}
             />
             {/* <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>

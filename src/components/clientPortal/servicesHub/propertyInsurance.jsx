@@ -1,9 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import RenderFields from './maintainence/renderFields'
 import { propertyInsuranceSteps } from '../../../data/billsConsolidationSteps'
+import { useAuth } from '../../../context/useAuth'
+import clientProfileService from '../../../api/services/clientProfileService'
+import { Form } from 'antd'
 
 const PropertyInsurance = () => {
+  const { user } = useAuth()
+  const [form] = Form.useForm()
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -32,14 +37,38 @@ const PropertyInsurance = () => {
     termsAgreed: false
   })
 
+  useEffect(() => {
+    const getUserInfo = () => {
+      clientProfileService.getClientProfile(user.id).then(res => {
+        console.log('getUserInfo', res)
+        setFormData({
+          ...formData,
+          fullName: res?.name,
+          email: res?.email,
+          phoneNumber: res?.phoneNumber,
+          address: res?.address
+        })
+
+      })
+    }
+    if (user) {
+      getUserInfo()
+    }
+  }, [user])
+
   const handleFormChange = newData => {
     console.log('handleFormChange', newData)
     setFormData({ ...formData, ...newData })
   }
 
-  const handleSubmitForm = () => {
+  const handleSubmitForm = (values) => {
     // Handle form submission logic here
-    console.log('Form submitted:', formData)
+    const updatedData ={
+      userId: user?.id,
+      ...formData,
+      ...values
+    }
+    console.log('Form submitted:', updatedData)
   }
 
   const shouldDisplay = section => {
@@ -86,7 +115,7 @@ const PropertyInsurance = () => {
           </div>
         </div>
       </div>
-      <div className='flex flex-col gap-8'>
+      <Form form={form} onFinish={handleSubmitForm} className='flex flex-col gap-8'>
         {visibleSteps.map((step, originalIndex) =>
           !step.isVisible ? null : (
             <div key={originalIndex} className='flex flex-col gap-4 border-b'>
@@ -108,6 +137,7 @@ const PropertyInsurance = () => {
                     <RenderFields
                       key={fieldIndex}
                       step={step}
+                      form={form}
                       formData={formData}
                       index={fieldIndex}
                       onChange={handleFormChange}
@@ -119,7 +149,6 @@ const PropertyInsurance = () => {
             </div>
           )
         )}
-      </div>
       <div className='flex gap-4 mt-8 justify-between'>
         <button
           type='button'
@@ -129,13 +158,14 @@ const PropertyInsurance = () => {
         </button>
 
         <button
-          type='button'
+          type='submit'
           className='bg-[#131e47] flex-1 rounded-lg px-7 py-2 text-white font-medium'
-          onClick={handleSubmitForm}
+      
         >
           Submit Request
         </button>
       </div>
+      </Form>
     </div>
   )
 }

@@ -1,23 +1,28 @@
-'use client'
 
-import { useState } from 'react'
-import { Form, Input, Button, Checkbox } from 'antd'
-import { GoogleOutlined, FacebookFilled } from '@ant-design/icons'
+import { Form, Input, Button, Checkbox, message } from 'antd'
+
 import SocialLogin from '../components/SocialLogin'
 import AuthLayout from '../components/AuthLayout'
 import { css } from './register'
+import { useLogin } from '../hooks/useLogin'
+import { showToast } from '../utils/toast'
 
 const SignUp = () => {
   const [form] = Form.useForm()
-  const [loading, setLoading] = useState(false)
+  const { registerBasic, loading, error } = useLogin()
 
-  const onFinish = values => {
-    setLoading(true)
-    // Handle form submission
-    console.log('Success:', values)
-    setLoading(false)
+  const onFinish = async values => {
+    try {
+      await registerBasic(values)
+      showToast('success', 'Registration successful')
+    } catch (err) {
+      if (error) {
+        showToast('error', error)
+      } else {
+        showToast('error', err.message || 'Registration failed')
+      }
+    }
   }
-
   return (
     <AuthLayout title='Get Started Now'>
       <>
@@ -44,7 +49,7 @@ const SignUp = () => {
               }
             ]}
           >
-            <Input placeholder='Enter your Name..' className={css+" dp"} />
+            <Input placeholder='Enter your Name..' className={css + ' dp'} />
           </Form.Item>
           <Form.Item
             name='email'
@@ -55,7 +60,10 @@ const SignUp = () => {
               { type: 'email', message: 'Please enter a valid email address' }
             ]}
           >
-            <Input placeholder='Enter your Email Address..' className={css+" dp"} />
+            <Input
+              placeholder='Enter your Email Address..'
+              className={css + ' dp'}
+            />
           </Form.Item>
           <Form.Item
             name='password'
@@ -75,7 +83,10 @@ const SignUp = () => {
               }
             ]}
           >
-            <Input.Password placeholder='Enter your Password..' className={css+" dp"}/>
+            <Input.Password
+              placeholder='Enter your Password..'
+              className={css + ' dp'}
+            />
           </Form.Item>
           <Form.Item
             name='confirmPassword'
@@ -94,7 +105,10 @@ const SignUp = () => {
               })
             ]}
           >
-            <Input.Password placeholder='Enter your Password..' className={css+" dp"}/>
+            <Input.Password
+              placeholder='Enter your Password..'
+              className={css + ' dp'}
+            />
           </Form.Item>
           <Form.Item
             name='agreement'
@@ -108,7 +122,9 @@ const SignUp = () => {
               }
             ]}
           >
-            <Checkbox className='font-medium'>I agree to the terms & policy</Checkbox>
+            <Checkbox className='font-medium'>
+              I agree to the terms & policy
+            </Checkbox>
           </Form.Item>
           <Form.Item>
             <Button

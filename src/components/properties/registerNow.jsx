@@ -1,7 +1,12 @@
 import { Button } from "antd"
 import { FaArrowRightLong } from "react-icons/fa6"
+import { useNavigate } from "react-router-dom"
 
 const RegisterNow = () => {
+  const navigate = useNavigate()
+  const handleRegisterClick = () => {
+    navigate('/register')
+  }
   return (
     <section className='py-16 bg-[#40c7f4]'>
       <div className='container'>
@@ -16,6 +21,7 @@ const RegisterNow = () => {
             </p>
             <Button
               size='large'
+              onClick={handleRegisterClick}
               icon={<FaArrowRightLong />}
               iconPosition='end'
               className='mt-4 px-8 md:mt-0 bg-accent flex max-w-[272px] flex-1  items-center gap-10 hover:!bg-accent font-medium text-base text-primary border-none'

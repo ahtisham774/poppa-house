@@ -1,22 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  Form,
-  Input,
-  Button,
-  Checkbox,
-  Select,
-  DatePicker,
-  Upload,
-  Radio,
-  Space
-} from 'antd'
-import { UploadOutlined, ArrowLeftOutlined } from '@ant-design/icons'
+import { Form, Input, Button, Checkbox, Select } from 'antd'
 import AuthLayout from '../components/AuthLayout'
-import { Link } from 'react-router-dom'
-import { MdArrowBack } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
+import { showToast } from '../utils/toast'
+import { useJobListingRegistration } from '../hooks/useJobListingRegistration'
 
+import { PhoneInput } from 'react-international-phone'
+import 'react-international-phone/style.css'
 export const css = `flex-1 w-full px-0 py-2 bg-transparent border-0 border-b-2 !border-[#adadad] !outline-none rounded-none ring-0 focus:ring-0 focus:outline-none`
 const { Option } = Select
 const { TextArea } = Input
@@ -44,7 +36,7 @@ const ListingPackageCard = ({
     </p>
     <Button
       className='bg-primary text-white border-none rounded-full absolute -bottom-4 left-1/2 -translate-x-1/2 hover:bg-blue-900'
-      onClick={() => onSelect(title.toLowerCase().replace(' ', '_'))}
+      onClick={() => onSelect(title)}
     >
       Choose Plan
     </Button>
@@ -53,27 +45,62 @@ const ListingPackageCard = ({
 
 const Register = () => {
   const [form] = Form.useForm()
-  const [loading, setLoading] = useState(false)
   const [userType, setUserType] = useState(null)
+  const { registerForJobListing, loading, error } = useJobListingRegistration()
   const [selectedPackage, setSelectedPackage] = useState(null)
+  const navigate = useNavigate()
 
-  const onFinish = values => {
-    setLoading(true)
-    // Handle form submission
-    console.log('Success:', values)
-    setLoading(false)
+  const onFinish = async values => {
+    try {
+      let formData = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        password: values.password,
+        phoneNumber: values.phoneNumber,
+        address: values.address,
+        postalCode: values.postalCode,
+        role: values.role,
+        listingPackage: values.listingPackage,
+        additionalInfo: values.additionalInfo,
+        agreement: values.agreement
+      }
+      if (userType === 'Estate Agent') {
+        ;(formData.companyName = values.companyName),
+          (formData.companyRegistrationCode = values.companyRegistrationCode),
+          (formData.position = values.position)
+      } else if (userType === 'Landlord') {
+        formData.landlordDetails = {
+          documents: values.LandlordDocuments
+        }
+      } else if (userType === 'Property Owner') {
+        formData.propertyOwnerDetails = {
+          documents: values.ownerDocuments
+        }
+      }
+
+      const response = await registerForJobListing(formData)
+      if (response.error) {
+        showToast('error', response.error)
+        return
+      }
+      window.location.href = response.checkoutUrl
+
+      showToast('success', 'Registration successful')
+    } catch (err) {
+      showToast('error', err.message || 'Something went wrong')
+    }
   }
-
   const handleUserTypeChange = value => {
     setUserType(value)
     // Reset related fields when user type changes
-    if (value === 'estate_agent') {
+    if (value === 'Estate Agent') {
       form.setFieldsValue({
         companyName: undefined,
         companyRegistrationCode: undefined,
         positionInCompany: undefined
       })
-    } else if (value === 'landlord' || value === 'property_owner') {
+    } else if (value === 'Landlord' || value === 'Property Owner') {
       form.setFieldsValue({
         documents: undefined
       })
@@ -92,7 +119,6 @@ const Register = () => {
         ' Please fill out the form below to list your property, and a member of our team will contact you shortly.'
       }
     >
-     
       <div className='w-full '>
         <Form
           form={form}
@@ -135,69 +161,39 @@ const Register = () => {
               <Input placeholder='Enter your Email Address..' className={css} />
             </Form.Item>
             <Form.Item
-              name='phone'
+              name='phoneNumber'
               className='font-medium'
               label={<p className='font-medium'>Phone Number</p>}
               rules={[
-                { required: true, message: 'Please enter your phone number' },
-                {
-                  pattern: /^[0-9]+$/,
-                  message: 'The phone number must not contain any letters'
-                }
+                { required: true, message: 'Please enter your phone number' }
               ]}
             >
-              <Input
-                style={{
-                  borderRadius: '0px',
-                  border: 'none',
-                  background: '#fff'
-                }}
-                className={'dp'}
-                styles={{
-                  input: {
-                    borderTop: 'none',
-                    borderLeft: 'none',
-                    borderRight: 'none',
-                    borderRadius: '0px',
-                    marginLeft: '1rem',
-                    width: '95%'
-                  }
-                }}
-                addonBefore={
-                  <Select
-                    className='dp'
-                    suffixIcon={
-                      <svg
-                        width='10'
-                        height='6'
-                        viewBox='0 0 10 6'
-                        fill='none'
-                        xmlns='http://www.w3.org/2000/svg'
-                      >
-                        <path
-                          d='M0 0.207031L5 5.20703L10 0.207031H0Z'
-                          fill='#242426'
-                        />
-                      </svg>
-                    }
-                    defaultValue='+1'
-                    style={{
-                      width: 70,
-                      borderTop: 'none',
-                      borderLeft: 'none',
-                      borderRight: 'none',
-                      borderRadius: '0px',
-                      background: '#fff'
-                    }}
-                  >
-                    <Select.Option value='+1'>+1</Select.Option>
-                    <Select.Option value='+44'>+44</Select.Option>
-                  </Select>
-                }
-                placeholder='(000) 000 0000'
-              />
+              <PhoneInput placeholder='Enter phone number' className='border_b'/>
             </Form.Item>
           </div>
+          <Form.Item
+            name='password'
+            label='Password'
+            className='font-medium'
+            rules={[
+              { required: true, message: 'Please enter your password' },
+              {
+                min: 8,
+                message: 'The password must be at least 8 characters long'
+              },
+              {
+                pattern:
+                  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/,
+                message:
+                  'Please choose a strong password that includes at least 1 lowercase and uppercase letter, a number, as well as a special character (!@#$%^&*)'
+              }
+            ]}
+          >
+            <Input.Password
+              placeholder='Enter your Password..'
+              className={css + ' dp'}
+            />
+          </Form.Item>
 
           <div className='grid grid-cols-1 md:grid-cols-2 gap-16'>
             <Form.Item
@@ -215,7 +211,7 @@ const Register = () => {
           </div>
 
           <Form.Item
-            name='userType'
+            name='role'
             label={<p className='font-medium'>Are You? (Select one)</p>}
             rules={[{ required: true, message: 'Please select your role' }]}
           >
@@ -238,14 +234,14 @@ const Register = () => {
                 </svg>
               }
             >
-              <Option value='estate_agent'>Estate Agent</Option>
-              <Option value='landlord'>Landlord</Option>
-              <Option value='property_owner'>Property Owner</Option>
+              <Option value='Estate Agent'>Estate Agent</Option>
+              <Option value='Landlord'>Landlord</Option>
+              <Option value='Property Owner'>Property Owner</Option>
             </Select>
           </Form.Item>
 
           {/* Conditional Fields for Estate Agent */}
-          {userType === 'estate_agent' && (
+          {userType === 'Estate Agent' && (
             <div className='pt-4'>
               <p className='font-medium mb-4'>
                 If You Are an Estate Agent, Please Provide Your Company Details
@@ -274,7 +270,7 @@ const Register = () => {
                   />
                 </Form.Item>
                 <Form.Item
-                  name='positionInCompany'
+                  name='position'
                   label={
                     <p className='font-medium'>Your Position in the Company:</p>
                   }
@@ -286,14 +282,14 @@ const Register = () => {
           )}
 
           {/* Conditional Fields for Landlord */}
-          {userType === 'landlord' && (
+          {userType === 'Landlord' && (
             <div className='pt-4'>
               <p className='font-medium mb-4'>
                 If you're a Landlord, select any 2 documents you can provide for
                 your listing.
               </p>
               <Form.Item
-                name='landlordDocuments'
+                name='LandlordDocuments'
                 rules={[
                   {
                     required: true,
@@ -301,21 +297,37 @@ const Register = () => {
                   }
                 ]}
               >
-                <Checkbox.Group className='flex flex-col space-y-2'>
-                  <Checkbox value='electrical_cert'>
+                <Checkbox.Group
+                  className='flex flex-col space-y-2'
+                  options={[
+                    {
+                      label: 'Electrical Certification',
+                      value: 'Electrical Certification'
+                    },
+                    {
+                      label: 'Gas Safety Certificate',
+                      value: 'Gas Safety Certificate'
+                    },
+                    {
+                      label: 'Energy Performance Certificate (EPC)',
+                      value: 'Energy Performance Certificate (EPC)'
+                    }
+                  ]}
+                >
+                  {/* <Checkbox value='electrical_cert'>
                     Electrical Certification
                   </Checkbox>
                   <Checkbox value='gas_safety'>Gas Safety Certificate</Checkbox>
                   <Checkbox value='epc'>
                     Energy Performance Certificate (EPC)
-                  </Checkbox>
+                  </Checkbox> */}
                 </Checkbox.Group>
               </Form.Item>
             </div>
           )}
 
           {/* Conditional Fields for Property Owner */}
-          {userType === 'property_owner' && (
+          {userType === 'Property Owner' && (
             <div className='pt-4'>
               <p className='font-medium mb-4'>
                 If you're a Property Owner, select any 2 documents you can
@@ -330,15 +342,23 @@ const Register = () => {
                   }
                 ]}
               >
-                <Checkbox.Group className='flex flex-col space-y-2'>
-                  <Checkbox value='electrical_cert'>
-                    Electrical Certification
-                  </Checkbox>
-                  <Checkbox value='gas_safety'>Gas Safety Certificate</Checkbox>
-                  <Checkbox value='epc'>
-                    Energy Performance Certificate (EPC)
-                  </Checkbox>
-                </Checkbox.Group>
+                <Checkbox.Group
+                  className='flex flex-col space-y-2'
+                  options={[
+                    {
+                      label: 'Electrical Certification',
+                      value: 'Electrical Certification'
+                    },
+                    {
+                      label: 'Gas Safety Certificate',
+                      value: 'Gas Safety Certificate'
+                    },
+                    {
+                      label: 'Energy Performance Certificate (EPC)',
+                      value: 'Energy Performance Certificate (EPC)'
+                    }
+                  ]}
+                ></Checkbox.Group>
               </Form.Item>
             </div>
           )}
@@ -430,7 +450,8 @@ const Register = () => {
               type='primary'
               htmlType='submit'
               loading={loading}
-              className='w-full bg-accent text-black border-none hover:!bg-accent hover:!text-black py-5 font-medium text-base'
+              disabled={loading}
+              className='w-full bg-accent text-black border-none disabled:cursor-not-allowed hover:!bg-accent hover:!text-black py-5 font-medium text-base'
             >
               Register
             </Button>

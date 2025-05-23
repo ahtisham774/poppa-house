@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../../context/useAuth'
+import { useLogin } from '../../../hooks/useLogin'
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
  const { user } = useAuth()
+ const {logout} = useLogin()
   const location = useLocation()
-  const role = user?.role
+  const role = user?.role?.toLowerCase()
   const [expandedMenus, setExpandedMenus] = useState({})
   const [activeMenu, setActiveMenu] = useState("")
   const [isMobile, setIsMobile] = useState(false)
@@ -77,6 +79,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   }
 
   const handleMenuClick = (menuKey, hasSubItems = false) => {
+    if(menuKey === 'logout') {
+      logout()
+      setActiveMenu('')
+      setSidebarOpen(false)
+      return
+    }
     if (!hasSubItems) {
       setActiveMenu(menuKey)
     }
@@ -207,7 +215,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       section: 'TOOLS',
       items: [
         {
-          title: 'Help',
+        title: 'Help & Support',
           menuKey: 'help',
           icon: (
             <svg
@@ -224,7 +232,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               />
             </svg>
           ),
-          href: '#'
+          href: baseUrl + 'help'
         },
         {
           title: 'Log Out',
@@ -454,12 +462,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               />
             </svg>
           ),
-          href: '/client/support'
+          href: baseUrl + 'support'
         },
 
         {
           title: 'Log Out',
           menuKey: 'logout',
+
           icon: (
             <svg
               className='w-5 h-5'
@@ -475,7 +484,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               />
             </svg>
           ),
-          href: '#'
+          onClick: () => {
+            logout()
+          }
         }
       ]
     }

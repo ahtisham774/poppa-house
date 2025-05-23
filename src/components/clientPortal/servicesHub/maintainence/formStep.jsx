@@ -35,7 +35,7 @@ const FormStep = ({ index, step, formData, onChange, serviceType }) => {
           key={sectionIndex}
           section={section}
           formData={formData}
-          onChange={handleChange}
+          onChange={onChange}
           onNestedChange={handleNestedChange}
           serviceType={serviceType}
         />
@@ -53,7 +53,7 @@ const FormStep = ({ index, step, formData, onChange, serviceType }) => {
                   key={fieldIndex}
                   field={field}
                   formData={formData}
-                  onChange={handleChange}
+                  onChange={onChange}
                   onNestedChange={handleNestedChange}
                 />
               )
@@ -63,7 +63,7 @@ const FormStep = ({ index, step, formData, onChange, serviceType }) => {
                   key={fieldIndex}
                   field={field}
                   formData={formData}
-                  onChange={handleChange}
+                  onChange={onChange}
                 />
               )
             case 'room-type':

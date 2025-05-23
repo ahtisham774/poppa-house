@@ -1,9 +1,15 @@
-import NeedHelp from '../components/clientPortal/servicesHub/needHelp'
-import ModalProvider, { useModal } from '../context/useModal'
+import { useModal } from '../context/useModal'
 import { services } from '../data/services'
 
 const ServiceCard = ({ service }) => {
-  const { openModal } = useModal()
+  const modalContext = useModal()
+  if (!modalContext) {
+    console.warn('useModal must be used within ModalProvider')
+    return null
+  }
+
+  const { openModal } = modalContext
+  console.log('ServiceCard:', openModal)
   if (!service) {
     console.error("ServiceCard: 'service' prop is required")
     return (
@@ -20,22 +26,18 @@ const ServiceCard = ({ service }) => {
 
   const handleSubscribe = () => {
     try {
-      if (name === 'Property Viewing') {
-        openModal('propertyViewingPackages')
-      } else if (name === 'Property Search') {
-        openModal('propertySearchService')
-      } else if (name === 'Property Management') {
-        openModal('maintenanceServiceSelect')
-      } 
-      else if (name === 'Bills Consolidation') {
-        openModal('billsConsolidation')
-      }
-      else if (name === 'Property Insurance') {
-        openModal('propertyInsurance')
-      }
-      else {
-        console.warn('No modal handler for service:', name)
-        openModal('defaultService')
+      if (openModal) {
+        if (name === 'Property Viewing') {
+          openModal('propertyViewingPackages')
+        } else if (name === 'Property Search') {
+          openModal('propertySearchService')
+        } else if (name === 'Property Management') {
+          openModal('maintenanceServiceSelect')
+        } else if (name === 'Bills Consolidation') {
+          openModal('billsConsolidation')
+        } else if (name === 'Property Insurance') {
+          openModal('propertyInsurance')
+        }
       }
     } catch (error) {
       console.error('Error opening modal:', error)
@@ -99,25 +101,22 @@ const ServiceCard = ({ service }) => {
   )
 }
 
-
 const ServicesHub = () => {
   return (
-    <ModalProvider>
-      <div className='flex flex-col gap-8 p-4 lg:p-8'>
-        <div className='flex flex-col gap-3'>
-          <h1 className='text-4xl font-medium text-gray-800'>Services Hub</h1>
-          <p className='text-gray-600'>
-            Explore our range of property management and real estate services
-          </p>
-        </div>
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {services.map((service, index) => (
-            <ServiceCard key={index} service={service} />
-          ))}
-          <NeedHelp />
-        </div>
+    <div className='flex flex-col gap-8 p-4 lg:p-8'>
+      <div className='flex flex-col gap-3'>
+        <h1 className='text-4xl font-medium text-gray-800'>Services Hub</h1>
+        <p className='text-gray-600'>
+          Explore our range of property management and real estate services
+        </p>
       </div>
-    </ModalProvider>
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+        {services.map((service, index) => (
+          <ServiceCard key={index} service={service} />
+        ))}
+        {/* <NeedHelp /> */}
+      </div>
+    </div>
   )
 }
 

@@ -1,9 +1,13 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useModal } from '../../../context/useModal'
+import { useAuth } from '../../../context/useAuth'
+import Loader from '../../common/loader'
+import clientProfileService from '../../../api/services/clientProfileService'
 
 export function PropertySearchServiceModal ({ close }) {
   const [tab, setTab] = React.useState(0)
   const { openModal } = useModal()
+  const [loading, setLoading] = React.useState(false)
   const [scheduleForm, setScheduleForm] = React.useState({
     firstName: '',
     secondName: '',
@@ -14,11 +18,12 @@ export function PropertySearchServiceModal ({ close }) {
     callTime: '',
     agreeToTerms: false
   })
+  const { user } = useAuth()
 
   const [searchForm, setSearchForm] = React.useState({
-    fullName: '',
-    email: '',
-    phoneNumber: '',
+    fullName: user?.name || '',
+    email: user?.email || '',
+    phoneNumber: user?.phoneNumber || '',
     preferredContactMethod: '',
     propertyType: '',
     otherPropertyType: '',
@@ -48,6 +53,35 @@ export function PropertySearchServiceModal ({ close }) {
     moveInAssistance: false,
     confirmAccuracy: false
   })
+
+  useEffect(() => {
+    const getUserData = () => {
+      clientProfileService
+        .getClientProfile(user?.id)
+        .then(data => {
+          setSearchForm(prev => ({
+            ...prev,
+            fullName: data.name,
+            email: data.email,
+            phoneNumber: data.phoneNumber
+          }))
+          setScheduleForm(prev => ({
+            ...prev,
+            firstName: data.name,
+            phoneNumber: data.phoneNumber,
+            preferredCountry: data?.address?.country,
+            preferredCity: data?.address?.city
+
+          }))
+        })
+        .catch(error => {
+          console.error('Error fetching user data:', error)
+        })
+    }
+    if (user) {
+      getUserData()
+    }
+  }, [user])
 
   const handleScheduleChange = e => {
     const { name, value, type, checked } = e.target
@@ -83,10 +117,84 @@ export function PropertySearchServiceModal ({ close }) {
     // Add submission logic here
   }
 
-  const handleSearchSubmit = e => {
+  const formatSearchFormData = () => {
+    // Convert amenities to array of selected options
+    const additionalPreferences = Object.entries(searchForm.amenities)
+      .filter(([_, value]) => value)
+      .map(([key]) => {
+        // Convert camelCase to normal words
+        return key
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/^./, str => str.toUpperCase())
+      })
+
+    return {
+      phoneNumber: searchForm.phoneNumber,
+      fullName: searchForm.fullName,
+      email: searchForm.email,
+      preferredContactMethod: searchForm.preferredContactMethod
+        ? searchForm.preferredContactMethod.charAt(0).toUpperCase() +
+          searchForm.preferredContactMethod.slice(1)
+        : '',
+      propertyPreferences: [
+        {
+          propertyType:
+            searchForm.otherPropertyType ||
+            (searchForm.propertyType
+              ? searchForm.propertyType.charAt(0).toUpperCase() +
+                searchForm.propertyType.slice(1)
+              : ''),
+          numBedrooms: parseInt(searchForm.bedrooms) || 0,
+          numBathrooms: parseInt(searchForm.bathrooms) || 0,
+          furnished: searchForm.furnished === 'furnished',
+          parkingRequired: searchForm.parking
+            ? searchForm.parking.charAt(0).toUpperCase() +
+              searchForm.parking.slice(1)
+            : '',
+          petFriendly: searchForm.petFriendly
+            ? searchForm.petFriendly.charAt(0).toUpperCase() +
+              searchForm.petFriendly.slice(1)
+            : ''
+        }
+      ],
+      locationAndBudget: [
+        {
+          country: searchForm.country.toUpperCase(),
+          city: searchForm.city,
+          townOrArea: searchForm.specificArea,
+          budget: parseInt(searchForm.maxBudget) || 0,
+          moveInDate: searchForm.moveInDate,
+          minimumLeaseTerm: searchForm.minimumLeaseTerm
+            ? `${searchForm.minimumLeaseTerm} Months`
+            : '',
+          additionalPreferences,
+          specificRequirements: searchForm.additionalRequirements
+        }
+      ],
+      moveInAssistance: searchForm.moveInAssistance
+    }
+  }
+
+  const handleSearchSubmit = async e => {
     e.preventDefault()
-    console.log('Search form submitted:', searchForm)
-    // Add submission logic here
+
+    if (!searchForm.confirmAccuracy) {
+      alert('Please confirm the accuracy of your details')
+      return
+    }
+
+    const formattedData = formatSearchFormData()
+    console.log('Formatted search data:', formattedData)
+
+    try {
+      // Here you would typically make an API call
+      // await api.submitPropertySearchRequest(formattedData)
+      close()
+      // Optionally show success message
+    } catch (error) {
+      console.error('Submission error:', error)
+      // Handle error (show error message, etc.)
+    }
   }
 
   return (
@@ -95,13 +203,6 @@ export function PropertySearchServiceModal ({ close }) {
         <h2 className='text-2xl font-semibold text-primary'>
           Property Search Service
         </h2>
-        <button
-          type='button'
-          onClick={close}
-          className='text-gray-500 hover:text-gray-700'
-        >
-          ✕
-        </button>
       </div>
       <div className='text-gray-600 mb-4'>
         Let our expert agents find the perfect property for you. Choose how
@@ -133,13 +234,13 @@ export function PropertySearchServiceModal ({ close }) {
 
       {tab === 0 ? (
         <form onSubmit={handleScheduleSubmit}>
-          <h3 className='font-medium text-gray-800 mb-4'>
+          <h3 className='font-medium text-primary mb-4'>
             Schedule a Call with Our Agent
           </h3>
 
           <div className='grid grid-cols-2 gap-4 mb-4'>
             <div>
-              <label className='block mb-1 text-sm text-gray-800 font-medium'>
+              <label className='block mb-1 text-sm text-primary font-medium'>
                 First Name
               </label>
               <input
@@ -151,7 +252,7 @@ export function PropertySearchServiceModal ({ close }) {
               />
             </div>
             <div>
-              <label className='block mb-1 text-sm text-gray-800 font-medium'>
+              <label className='block mb-1 text-sm text-primary font-medium'>
                 Second Name
               </label>
               <input
@@ -165,7 +266,7 @@ export function PropertySearchServiceModal ({ close }) {
           </div>
 
           <div className='mb-4'>
-            <label className='block mb-1 text-sm text-gray-800 font-medium'>
+            <label className='block mb-1 text-sm text-primary font-medium'>
               Phone Number
             </label>
             <input
@@ -179,49 +280,35 @@ export function PropertySearchServiceModal ({ close }) {
 
           <div className='grid grid-cols-2 gap-4 mb-4'>
             <div>
-              <label className='block mb-1 text-sm text-gray-800 font-medium'>
+              <label className='block mb-1 text-sm text-primary font-medium'>
                 Preferred Country
               </label>
-              <select
+             <input
                 name='preferredCountry'
                 value={scheduleForm.preferredCountry}
                 onChange={handleScheduleChange}
-                className='w-full border rounded-lg px-3 py-2 appearance-none bg-white'
-              >
-                <option value=''>Select Country</option>
-                <option value='uk'>United Kingdom</option>
-                <option value='us'>United States</option>
-                <option value='ca'>Canada</option>
-                <option value='au'>Australia</option>
-                {/* Add more countries as needed */}
-              </select>
+                className='w-full border rounded-lg px-3 py-2'
+                placeholder='Enter your preferred country'
+              />
             </div>
             <div>
-              <label className='block mb-1 text-sm text-gray-800 font-medium'>
+              <label className='block mb-1 text-sm text-primary font-medium'>
                 Preferred City
               </label>
-              <select
+
+              <input
                 name='preferredCity'
                 value={scheduleForm.preferredCity}
                 onChange={handleScheduleChange}
-                className='w-full border rounded-lg px-3 py-2 appearance-none bg-white'
-                disabled={!scheduleForm.preferredCountry}
-              >
-                <option value=''>Select Country first</option>
-                {scheduleForm.preferredCountry && (
-                  <>
-                    <option value='city1'>City 1</option>
-                    <option value='city2'>City 2</option>
-                    <option value='city3'>City 3</option>
-                  </>
-                )}
-              </select>
+                className='w-full border rounded-lg px-3 py-2'
+                placeholder='Enter your preferred city'
+              />
             </div>
           </div>
 
           <div className='grid grid-cols-2 gap-4 mb-5'>
             <div>
-              <label className='block mb-1 text-sm text-gray-800 font-medium'>
+              <label className='block mb-1 text-sm text-primary font-medium'>
                 Call Scheduling Calendar
               </label>
               <input
@@ -233,7 +320,7 @@ export function PropertySearchServiceModal ({ close }) {
               />
             </div>
             <div>
-              <label className='block mb-1 text-sm text-gray-800 font-medium'>
+              <label className='block mb-1 text-sm text-primary font-medium'>
                 Time
               </label>
               <input
@@ -282,13 +369,13 @@ export function PropertySearchServiceModal ({ close }) {
       ) : (
         <form onSubmit={handleSearchSubmit}>
           <div className='border-b-2  border-b-[#b8b8b8b7] py-6 flex flex-col'>
-            <h3 className='font-medium text-gray-800 mb-4'>
-              Personal Information
+            <h3 className='font-medium text-primary mb-4'>
+              1. Personal Information
             </h3>
 
             <div className='grid grid-cols-2 gap-4 mb-4'>
               <div>
-                <label className='block mb-1 text-sm text-gray-800 font-medium'>
+                <label className='block mb-1 text-sm text-primary font-medium'>
                   Full Name
                 </label>
                 <input
@@ -300,7 +387,7 @@ export function PropertySearchServiceModal ({ close }) {
                 />
               </div>
               <div>
-                <label className='block mb-1 text-sm text-gray-800 font-medium'>
+                <label className='block mb-1 text-sm text-primary font-medium'>
                   Email Address
                 </label>
                 <input
@@ -315,7 +402,7 @@ export function PropertySearchServiceModal ({ close }) {
             </div>
 
             <div className='mb-4'>
-              <label className='block mb-1 text-sm text-gray-800 font-medium'>
+              <label className='block mb-1 text-sm text-primary font-medium'>
                 Phone Number
               </label>
               <input
@@ -328,10 +415,10 @@ export function PropertySearchServiceModal ({ close }) {
             </div>
 
             <div className='mb-4'>
-              <label className='block mb-1 text-sm text-gray-800 font-medium'>
+              <label className='block mb-1 text-sm text-primary font-medium'>
                 Preferred Contact Method
               </label>
-              <div className='flex gap-6 mt-1'>
+              <div className='flex gap-6 mt-1 font-medium text-sm'>
                 <label className='inline-flex items-center'>
                   <input
                     type='radio'
@@ -366,7 +453,7 @@ export function PropertySearchServiceModal ({ close }) {
                   <span className='ml-2'>Email</span>
                 </label>
               </div>
-              <p className='text-xs text-gray-500 mt-1'>
+              <p className='text-xs text-gray-500 mt-2'>
                 Please note that all updates will be sent to your messages tab
                 in your portal, that will be an ideal and preferred method of
                 communication.
@@ -374,15 +461,15 @@ export function PropertySearchServiceModal ({ close }) {
             </div>
           </div>
           <div className='border-b-2  border-b-[#b8b8b8b7] py-6 flex flex-col'>
-            <h3 className='font-medium text-gray-800 mb-4 mt-6'>
-              Property Preferences
+            <h3 className='font-medium text-primary mb-4 mt-6'>
+              2. Property Preferences
             </h3>
 
             <div className='mb-4'>
-              <label className='block mb-1 text-sm text-gray-800 font-medium'>
+              <label className='block mb-1 text-sm text-primary font-medium'>
                 Property Type
               </label>
-              <div className='flex gap-6 mt-1'>
+              <div className='flex gap-6 mt-1 font-medium text-sm'>
                 <label className='inline-flex items-center'>
                   <input
                     type='radio'
@@ -432,7 +519,7 @@ export function PropertySearchServiceModal ({ close }) {
 
             {searchForm.propertyType === 'other' && (
               <div className='mb-4'>
-                <label className='block mb-1 text-sm text-gray-800 font-medium'>
+                <label className='block mb-1 text-sm text-primary font-medium'>
                   Please specify property type
                 </label>
                 <input
@@ -447,7 +534,7 @@ export function PropertySearchServiceModal ({ close }) {
 
             <div className='grid grid-cols-2 gap-6 mb-4'>
               <div>
-                <label className='block mb-1 text-sm text-gray-800 font-medium'>
+                <label className='block mb-1 text-sm text-primary font-medium'>
                   Number of Bedrooms
                 </label>
                 <div className='flex gap-4 mt-1'>
@@ -499,7 +586,7 @@ export function PropertySearchServiceModal ({ close }) {
               </div>
 
               <div>
-                <label className='block mb-1 text-sm text-gray-800 font-medium'>
+                <label className='block mb-1 text-sm text-primary font-medium'>
                   Number of Bathrooms
                 </label>
                 <div className='flex gap-4 mt-1'>
@@ -553,10 +640,10 @@ export function PropertySearchServiceModal ({ close }) {
 
             <div className='grid grid-cols-3 gap-6 mb-6'>
               <div>
-                <label className='block mb-1 text-sm text-gray-800 font-medium'>
+                <label className='block mb-1 text-sm text-primary font-medium'>
                   Furnished or Unfurnished?
                 </label>
-                <div className='flex flex-col gap-2 mt-1'>
+                <div className='flex flex-col gap-1 font-medium text-sm mt-1'>
                   <label className='inline-flex items-center'>
                     <input
                       type='radio'
@@ -594,10 +681,10 @@ export function PropertySearchServiceModal ({ close }) {
               </div>
 
               <div>
-                <label className='block mb-1 text-sm text-gray-800 font-medium'>
+                <label className='block mb-1 text-sm text-primary font-medium'>
                   Parking Required?
                 </label>
-                <div className='flex flex-col gap-2 mt-1'>
+                <div className='flex flex-col gap-1 font-medium text-sm mt-1'>
                   <label className='inline-flex items-center'>
                     <input
                       type='radio'
@@ -635,10 +722,10 @@ export function PropertySearchServiceModal ({ close }) {
               </div>
 
               <div>
-                <label className='block mb-1 text-sm text-gray-800 font-medium'>
+                <label className='block mb-1 text-sm text-primary font-medium'>
                   Pet-Friendly?
                 </label>
-                <div className='flex flex-col gap-2 mt-1'>
+                <div className='flex flex-col gap-1 font-medium text-sm mt-1'>
                   <label className='inline-flex items-center'>
                     <input
                       type='radio'
@@ -677,13 +764,13 @@ export function PropertySearchServiceModal ({ close }) {
             </div>
           </div>
           <div className='border-b-2  border-b-[#b8b8b8b7] py-6 flex flex-col'>
-            <h3 className='font-medium text-gray-800 mb-4'>
-              Location & Budget
+            <h3 className='font-medium text-primary mb-4'>
+              3. Location & Budget
             </h3>
 
             <div className='grid grid-cols-2 gap-4 mb-4'>
               <div>
-                <label className='block mb-1 text-sm text-gray-800 font-medium'>
+                <label className='block mb-1 text-sm text-primary font-medium'>
                   Country
                 </label>
                 <select
@@ -701,7 +788,7 @@ export function PropertySearchServiceModal ({ close }) {
                 </select>
               </div>
               <div>
-                <label className='block mb-1 text-sm text-gray-800 font-medium'>
+                <label className='block mb-1 text-sm text-primary font-medium'>
                   City
                 </label>
                 <select
@@ -724,7 +811,7 @@ export function PropertySearchServiceModal ({ close }) {
             </div>
 
             <div className='mb-4'>
-              <label className='block mb-1 text-sm text-gray-800 font-medium'>
+              <label className='block mb-1 text-sm text-primary font-medium'>
                 Specific Town or Area Name
               </label>
               <input
@@ -738,31 +825,20 @@ export function PropertySearchServiceModal ({ close }) {
 
             <div className='grid grid-cols-2 gap-4 mb-4'>
               <div>
-                <label className='block mb-1 text-sm text-gray-800 font-medium'>
+                <label className='block mb-1 text-sm text-primary font-medium'>
                   Maximum Budget (£ per month)
                 </label>
-                <select
+                <input
+                  type='number'
                   name='maxBudget'
                   value={searchForm.maxBudget}
                   onChange={handleSearchChange}
-                  className='w-full border rounded-lg px-3 py-2 appearance-none bg-white'
-                >
-                  <option value=''>Select budget</option>
-                  <option value='500'>Up to £500</option>
-                  <option value='1000'>Up to £1,000</option>
-                  <option value='1500'>Up to £1,500</option>
-                  <option value='2000'>Up to £2,000</option>
-                  <option value='2500'>Up to £2,500</option>
-                  <option value='3000'>Up to £3,000</option>
-                  <option value='3500'>Up to £3,500</option>
-                  <option value='4000'>Up to £4,000</option>
-                  <option value='4500'>Up to £4,500</option>
-                  <option value='5000'>Up to £5,000</option>
-                  <option value='5000+'>£5,000+</option>
-                </select>
+                  className='w-full border rounded-lg px-3 py-2'
+                  placeholder='Enter your maximum budget'
+                />
               </div>
               <div>
-                <label className='block mb-1 text-sm text-gray-800 font-medium'>
+                <label className='block mb-1 text-sm text-primary font-medium'>
                   Move-in Date
                 </label>
                 <input
@@ -776,10 +852,10 @@ export function PropertySearchServiceModal ({ close }) {
             </div>
 
             <div className='mb-6'>
-              <label className='block mb-1 text-sm text-gray-800 font-medium'>
+              <label className='block mb-1 text-sm text-primary font-medium'>
                 Minimum Lease Term
               </label>
-              <div className='flex gap-6 mt-1'>
+              <div className='flex gap-6 font-medium text-sm mt-1'>
                 <label className='inline-flex items-center'>
                   <input
                     type='radio'
@@ -817,11 +893,11 @@ export function PropertySearchServiceModal ({ close }) {
             </div>
           </div>
           <div className='border-b-2  border-b-[#b8b8b8b7] py-6 flex flex-col'>
-            <h3 className='font-medium text-gray-800 mb-4'>
-              Additional Preferences
+            <h3 className='font-medium text-primary mb-4'>
+              4. Additional Preferences
             </h3>
 
-            <div className='grid grid-cols-3 gap-x-6 gap-y-2 mb-4'>
+            <div className='grid grid-cols-3 gap-x-6 gap-y-2 mb-4 font-medium text-sm'>
               <label className='inline-flex items-center'>
                 <input
                   type='checkbox'
@@ -915,7 +991,7 @@ export function PropertySearchServiceModal ({ close }) {
             </div>
 
             <div className='mb-6'>
-              <label className='block mb-1 text-sm text-gray-800 font-medium'>
+              <label className='block mb-1 text-sm text-primary font-medium'>
                 Any Other Specific Requirements? (Max. 2500 words)
               </label>
               <textarea
@@ -929,7 +1005,7 @@ export function PropertySearchServiceModal ({ close }) {
           </div>
           <div className='border-b-2  border-b-[#b8b8b8b7] py-6 flex flex-col'>
             <div className='mb-6'>
-              <h3 className='font-medium text-gray-800 mb-2'>
+              <h3 className='font-medium text-primary mb-2'>
                 Move-in Assistance (Optional)
               </h3>
               <p className='text-sm text-gray-600 mb-2'>
@@ -938,7 +1014,7 @@ export function PropertySearchServiceModal ({ close }) {
                 services to make your move smooth and stress-free.
               </p>
               <div className='mt-2'>
-                <p className='text-sm text-gray-800 mb-1'>
+                <p className='text-sm text-primary mb-1'>
                   Is this something you would like?
                 </p>
                 <div className='flex gap-6'>
@@ -985,7 +1061,12 @@ export function PropertySearchServiceModal ({ close }) {
                 name='confirmAccuracy'
                 checked={searchForm.confirmAccuracy}
                 onChange={handleSearchChange}
-                className='mt-1 accent-primary'
+                className='relative mr-2 appearance-none size-4 border-2 border-[#131e47] rounded-full checked:bg-white focus:outline-none focus:ring-0 transition-colors duration-200'
+                style={{
+                  backgroundImage: searchForm.confirmAccuracy
+                    ? 'radial-gradient(circle, #131e47 0%, #131e47 40%, white 40%, white 100%)'
+                    : 'none'
+                }}
               />
               <span className='ml-2 text-sm font-medium text-primary'>
                 I confirm that the details provided are accurate, and I would
@@ -997,7 +1078,7 @@ export function PropertySearchServiceModal ({ close }) {
           <div className='flex items-center gap-4 mb-6'>
             <button
               type='button'
-              className='text-[#2B4BB4]'
+              className='text-[#2B4BB4] font-medium'
               onClick={e => {
                 e.preventDefault()
                 openModal('refundPolicy')
@@ -1017,8 +1098,10 @@ export function PropertySearchServiceModal ({ close }) {
             </button>
             <button
               type='submit'
-              className='bg-primary flex-1 rounded-lg px-7 py-2 text-white font-medium'
+              disabled={loading}
+              className='bg-primary flex-1 flex items-center gap-2 justify-center disabled:cursor-not-allowed disabled:bg-opacity-60 rounded-lg px-7 py-2 text-white font-medium'
             >
+              {loading && <Loader variants='sm' />}
               Make Payment
             </button>
           </div>
@@ -1042,7 +1125,6 @@ export function RefundPolicyModal ({ close }) {
         <h2 className='text-2xl font-semibold text-primary'>
           Proppa House – Property Search Refund Policy
         </h2>
-        
       </div>
 
       <p className='mb-4 text-gray-700'>
@@ -1059,7 +1141,7 @@ export function RefundPolicyModal ({ close }) {
         28 days
       </p>
 
-      <h3 className='font-medium text-gray-800 mb-2 mt-6'>How It Works:</h3>
+      <h3 className='font-medium text-primary mb-2 mt-6'>How It Works:</h3>
       <ol className='list-decimal pl-5 mb-4 space-y-2 text-gray-700'>
         <li>
           <strong>Upfront Payment</strong> – A one-time fee is paid before the
@@ -1081,7 +1163,7 @@ export function RefundPolicyModal ({ close }) {
         </li>
       </ol>
 
-      <h3 className='font-medium text-gray-800 mb-2 mt-6'>Key Terms:</h3>
+      <h3 className='font-medium text-primary mb-2 mt-6'>Key Terms:</h3>
       <ul className='list-disc pl-5 mb-4 space-y-2 text-gray-700'>
         <li>
           A property is considered 'suitable' if it meets the criteria you
@@ -1102,7 +1184,7 @@ export function RefundPolicyModal ({ close }) {
         </li>
       </ul>
 
-      <h3 className='font-medium text-gray-800 mb-2 mt-6'>
+      <h3 className='font-medium text-primary mb-2 mt-6'>
         Client Responsibilities
       </h3>
       <ul className='list-disc pl-5 mb-4 space-y-2 text-gray-700'>
@@ -1120,7 +1202,7 @@ export function RefundPolicyModal ({ close }) {
         </li>
       </ul>
 
-      <h3 className='font-medium text-gray-800 mb-2 mt-6'>Refund Process</h3>
+      <h3 className='font-medium text-primary mb-2 mt-6'>Refund Process</h3>
       <ul className='list-disc pl-5 mb-4 space-y-2 text-gray-700'>
         <li>
           If a refund is due, it will be processed within 5-7 business days via
@@ -1132,7 +1214,7 @@ export function RefundPolicyModal ({ close }) {
         </li>
       </ul>
 
-      <h3 className='font-medium text-gray-800 mb-2 mt-6'>
+      <h3 className='font-medium text-primary mb-2 mt-6'>
         Agreement Termination
       </h3>
       <p className='mb-4 text-gray-700'>
@@ -1142,7 +1224,7 @@ export function RefundPolicyModal ({ close }) {
         be issued in such cases.
       </p>
 
-      <h3 className='font-medium text-gray-800 mb-2 mt-6'>
+      <h3 className='font-medium text-primary mb-2 mt-6'>
         Legal Considerations
       </h3>
       <ul className='list-disc pl-5 mb-4 space-y-2 text-gray-700'>

@@ -25,7 +25,6 @@ import InfoCenter from './pages/infoCenter'
 import TrainingDetailsPage from './pages/trainingDetailsPage'
 import TrainingMaterialsPage from './pages/trainingMaterialsPage'
 import AnnouncementsPage from './pages/announcementsPage'
-import AnnouncementDetailsPage from './pages/announcementDetailsPage'
 import CurrentJobs from './pages/currentJobs'
 import CurrentJobDetail from './pages/currentJobDetail'
 import Messages from './pages/messages'
@@ -55,14 +54,17 @@ import PageLayout from './components/common/pageLayout'
 import ViewClientActivity from './pages/viewClientActivity'
 import HelpAndSupport from './pages/helpAndSupport'
 
+
 const ProtectedRoute = ({ children, roles }) => {
   const { user } = useAuth()
+
+  console.log('User:', user)
 
   if (!user) {
     return <Navigate to='/login' replace />
   }
 
-  if (roles && !roles.includes(user.role)) {
+  if (roles && !roles.includes(user?.role?.toLowerCase())) {
     return <Navigate to='/' replace />
   }
 
@@ -96,9 +98,20 @@ const AuthenticatedLayout = ({ role }) => {
 }
 
 function App () {
-  const { user, setUser } = useAuth()
+  const { user, setUser, loading } = useAuth()
+
+
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <div className='size-10 border-4 border-t-4 border-gray-200 border-t-primary rounded-full animate-spin'></div>
+      </div>
+    )
+  }
+  
   return (
     <Routes>
+     
       <Route
         element={
           <Layout>
@@ -162,6 +175,8 @@ function App () {
           </Route>
         </Route>
 
+         <Route path='help' element={<HelpAndSupport />} />
+
         <Route path='info' element={<InfoCenter />} />
         <Route path='training/:id' element={<TrainingDetailsPage />} />
         <Route path='training-materials' element={<TrainingMaterialsPage />} />
@@ -214,6 +229,7 @@ function App () {
       </Route>
 
       <Route path='*' element={<h1>404 Not Found</h1>} />
+    
     </Routes>
   )
 }

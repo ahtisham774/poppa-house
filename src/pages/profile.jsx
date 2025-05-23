@@ -1,17 +1,85 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ProfileTab from '../components/staffPanel/profile/profileTab'
 import EditProfileForm from '../components/staffPanel/profile/editProfileForm'
 import VerificationsTab from '../components/staffPanel/profile/verificationsTab'
 import RatingsReviewsTab from '../components/staffPanel/profile/ratingsReviewsTab'
 import { useAuth } from '../context/useAuth'
+import staffProfileService from '../api/services/staffProfileService'
+import ProfileHeader from '../components/staffPanel/profile/profileHeader'
+import Reviews from '../components/clientPortal/profile/reviews'
+import { mockReviews } from '../data/review'
 
 const Profile = () => {
-  const {user, setUser} = useAuth()
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('edit')
+  const [staffProfile, setStaffProfile] = useState({})
+  const [loading, setLoading] = useState(false)
+  const [reviews, setReviews] = useState([])
+
+  useEffect(() => {
+    const getUserData = () => {
+      setLoading(true)
+      staffProfileService
+        .getStaffProfile(user?.userId || user?.id)
+        .then(response => {
+          const { data } = response
+          setStaffProfile(data)
+        })
+        .catch(error => {
+          console.error('Error fetching client profile:', error)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    }
+    if (user?.userId || user?.id) {
+      getUserData()
+    }
+  }, [user])
+
+useEffect(() => {
+    const getReviews = () => {
+      staffProfileService
+        .getStaffReviews(user?.userId || user?.id)
+        .then(response => {
+          const { data } = response
+          const reviewsData = data?.map(review => ({
+            id: review.jobId,
+            rating: review.rating,
+            comment: review.comment,
+            date: new Date(review.ratedAt).toLocaleDateString(),
+            serviceType: review.serviceType,
+            location: review.city,
+            reviewer: {
+              name: review.client.name,
+              profile: review.client.profilePicture,
+              initials: review.client.name.split(' ').map(n => n[0]).join('')
+            }
+          }))
+          setReviews(reviewsData)
+        })
+        .catch(error => {
+          console.error('Error fetching client profile:', error)
+        })
+    }
+    if (user?.userId || user?.id) {
+      getReviews()
+    }
+  }, [user])
 
   const handleTabChange = tab => {
     setActiveTab(tab)
+  }
+
+  const handleSubmit = async profilePicture => {
+    return staffProfileService.uploadProfileImage(user?.userId, profilePicture)
+  }
+
+  const handleAvailabilityChange = async availability => {
+    return staffProfileService.updateProfile(user?.userId, {
+      available: availability
+    })
   }
 
   return (
@@ -31,14 +99,20 @@ const Profile = () => {
       </div>
 
       {/* Profile Card */}
-      <div className='bg-white rounded-lg border-2 border-[#b1b1b171]  p-6 mb-6'>
+      {/* <div className='bg-white rounded-lg border-2 border-[#b1b1b171]  p-6 mb-6'>
         <div className='flex items-center'>
           <div className='relative'>
-            <img
-              src={user.avatar}
-              alt='User Avatar'
-              className='h-36 w-36 rounded-full object-cover border-4 border-white shadow-lg'
-            />
+            {user?.profilePicture ? (
+              <img
+                src={user?.profilePicture}
+                alt='User Avatar'
+                className='h-36 w-36 rounded-full object-cover border-4 border-white shadow-lg'
+              />
+            ) : (
+              <div className='h-36 w-36 rounded-full bg-gray-300 flex items-center text-5xl justify-center border-4 border-white shadow-lg'>
+                {user?.name?.charAt(0).toUpperCase()}
+              </div>
+            )}
             <button className='absolute bottom-2 right-2 bg-accent p-2 rounded-full'>
               <svg
                 className='h-5 w-5 text-black'
@@ -59,7 +133,7 @@ const Profile = () => {
             <h2 className='text-3xl font-semibold text-gray-900'>
               {user.name}
             </h2>
-            <p className='text-lg text-gray-600 mb-2'>Property Specialist</p>
+            <p className='text-lg text-gray-600 mb-2'>Property Specialist ID: {user?.id || user?.userId}</p>
             <div className='flex items-center mb-4'>
               <div className='w-14 h-7 bg-gray-300 rounded-full flex items-center p-1'>
                 <div className='w-5 h-5 rounded-full bg-white'></div>
@@ -72,10 +146,19 @@ const Profile = () => {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
+      <ProfileHeader
+        name={staffProfile?.name}
+        available={staffProfile?.available}
+        title={`${staffProfile?.professionalTitle} ID: ${staffProfile?.id || user?.userId}`}
+        bio={staffProfile?.about}
+        avatar={staffProfile?.profilePicture}
+        handleUpdateAvailability={handleAvailabilityChange}
+        handleSubmit={handleSubmit}
+      />
 
       {/* Tabs */}
-      <div className='bg-white rounded-lg  border-2 border-[#b1b1b171]  mb-6 p-3'>
+      <div className='bg-white rounded-lg  border-2 border-[#b1b1b171]  mb-6 p-3 overflow-x-auto'>
         <div className='flex'>
           <ProfileTab
             isActive={activeTab === 'edit'}
@@ -142,11 +225,9 @@ const Profile = () => {
 
       {/* Tab Content */}
       <div>
-        {activeTab === 'edit' && (
-          <EditProfileForm user={user} setUser={setUser} />
-        )}
+        {activeTab === 'edit' && <EditProfileForm userData={staffProfile} />}
         {activeTab === 'verifications' && <VerificationsTab />}
-        {activeTab === 'ratings' && <RatingsReviewsTab />}
+        {activeTab === 'ratings' && <Reviews data={null} />}
       </div>
     </div>
   )

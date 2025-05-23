@@ -4,18 +4,23 @@ import { Link, useNavigate } from 'react-router-dom'
 import { MenuOutlined, CloseOutlined, UserOutlined } from '@ant-design/icons'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import { user } from '../../data'
+import { useAuth } from '../../context/useAuth'
+import { useLogin } from '../../hooks/useLogin'
+import ShowProfile from '../common/showProfile'
 
 export function Header () {
   const [menuOpen, setMenuOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const { user } = useAuth()
+  const {logout} = useLogin()
 
   // Simulate checking if user is logged in
   useEffect(() => {
     // This could be replaced with actual authentication check
-    const userLoggedIn = localStorage.getItem('userLoggedIn') === 'true'
+    const userLoggedIn = user !== null
     setIsLoggedIn(userLoggedIn)
-  }, [])
+  }, [user])
 
   const toggleMenu = () => setMenuOpen(!menuOpen)
   const navigate = useNavigate()
@@ -40,7 +45,7 @@ export function Header () {
       key: 'logout',
       label: 'Log Out',
       onClick: () => {
-        localStorage.removeItem('userLoggedIn')
+        logout()
         setIsLoggedIn(false)
         navigate('/')
       }
@@ -60,7 +65,7 @@ export function Header () {
   }
 
   return (
-    <header className='border-b border-b-[#B8B8B8]'>
+    <header className='border-b border-b-[#B8B8B8] sticky top-0 z-50 bg-white'>
       <div className='container mx-auto px-4 h-20 lg:px-12 flex items-center justify-between'>
         <Link to='/' className='flex items-center'>
           <img
@@ -86,9 +91,7 @@ export function Header () {
         {/* Mobile Menu Button */}
         <div className='md:hidden flex items-center gap-2'>
           {isLoggedIn && (
-            <div className='rounded-full bg-accent w-8 h-8 flex items-center justify-center text-black font-medium text-xl'>
-            {user.firstName[0]}
-          </div>
+            <ShowProfile />
           )}
           <button
             className='p-2 text-2xl'
@@ -115,9 +118,7 @@ export function Header () {
                 className='cursor-pointer flex items-center gap-2 border border-[#8D8D8D] rounded-full px-4 py-0.5'
               >
                 <RxHamburgerMenu size={25} />
-                <div className='rounded-full bg-accent w-8 h-8 flex items-center justify-center text-black font-medium text-xl'>
-                {user.firstName[0]}
-                </div>
+              <ShowProfile />
               </div>
 
               {/* Desktop dropdown menu */}

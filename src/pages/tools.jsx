@@ -86,12 +86,7 @@ const ToolsPage = () => {
             </div>
           ))}
         </div>
-
-        <div className="fixed bottom-8 right-8">
-          <button className="bg-primary text-white px-6 py-3 rounded-md hover:bg-primary/90 transition-colors">
-            Need Help?
-          </button>
-        </div>
+        
       </div>
 
       {activeModal && (

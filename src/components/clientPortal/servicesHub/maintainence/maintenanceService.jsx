@@ -29,9 +29,9 @@ const MaintenanceService = () => {
     setCurrentScreen('packageSelect');
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (data) => {
     // Handle form submission
-    console.log('Form submitted', { selectedService, selectedPackage });
+    console.log('Form submitted', data);
   };
 
   switch(currentScreen) {

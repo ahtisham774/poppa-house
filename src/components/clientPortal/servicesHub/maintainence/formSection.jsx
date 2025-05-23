@@ -114,7 +114,7 @@ const FormSection = ({
                   key={fieldIndex}
                   field={field}
                   value={formData[field.name] || ''}
-                  onChange={value => onChange(field.name, value)}
+                  onChange={value => onChange({[field.name]:value})}
                 />
               )
           }

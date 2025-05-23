@@ -18,7 +18,7 @@ const RadioGroup = ({ field, formData, onChange }) => {
 
   const handleRadioChange = value => {
     console.log('handleRadioChange', name, value)
-    onChange(name, value)
+    onChange({ [name]: value })
   }
 
   // console.log('formData Radio', formData[name],label, options.filter(option => option.value === formData[name])[0]?.subFields);
@@ -119,7 +119,6 @@ const RadioGroup = ({ field, formData, onChange }) => {
                     step={field}
                     formData={formData}
                     field={subField}
-                    
                     onChange={onChange}
                   />
                 )

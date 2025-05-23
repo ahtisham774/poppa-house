@@ -1,9 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import CalculateButton from '../tools/calculateButton'
+import clientPreferenceService from '../../../api/services/clientPreferenceService'
+import { useAuth } from '../../../context/useAuth'
+import { showToast } from '../../../utils/toast'
 
-const Intentions = () => {
+const Intentions = ({intentions}) => {
   const [selectedOption, setSelectedOption] = useState(null)
-  const [consent, setConsent] = useState(null)  // Changed to null for unset state
-  const [willingToBuy, setWillingToBuy] = useState(null)  // Changed to null for unset state
+  const [consent, setConsent] = useState(null) // Changed to null for unset state
+  const [willingToBuy, setWillingToBuy] = useState(null) // Changed to null for unset state
+  const [loading, setLoading] = useState(false)
+  const { user } = useAuth()
 
   const options = [
     {
@@ -16,21 +22,53 @@ const Intentions = () => {
     }
   ]
 
+  useEffect(()=>{
+    if(intentions){
+      setSelectedOption(intentions?.buy?.selected ? 'Buy' : 'Rent')
+      setWillingToBuy(intentions?.buy?.proofOfFundsConsent)
+      setConsent(intentions?.rent?.rentConsent)
+    }
+  },[intentions])
+
+
+
   const isWillingToBuy = selectedOption === 'Buy'
   const isConsent = selectedOption === 'Rent'
+
+  const handleIntentions = () => {
+    const data = {
+      intendsToBuy: isWillingToBuy,
+      proofOfFundsConsent: isWillingToBuy && willingToBuy,
+      intendsToRent: isConsent,
+      rentDocumentConsent: isConsent && consent
+    }
+    setLoading(true)
+    clientPreferenceService
+      .updateIntentions(user?.id, data)
+      .then(() => {
+        showToast('success', 'Intentions updated successfully!')
+      })
+      .catch(error => {
+        console.error('Error updating intentions:', error)
+        showToast('error', 'Failed to update intentions. Please try again.')
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }
 
   return (
     <div className='bg-white rounded-lg br p-6 mb-6 flex flex-col gap-8'>
       <div className='flex flex-col gap-3'>
         <h1 className='text-lg font-medium'>Intentions</h1>
         <p className='text-sm text-[#888888]'>
-          Let us know what you're looking for so we can tailor our services
+          Let us know what you&apos;re looking for so we can tailor our services
           accordingly
         </p>
       </div>
       <div className='flex flex-col gap-8'>
         <div className='flex flex-col gap-2'>
-          <label htmlFor='residency' className='text-lg font-medium'>
+          <label  className='text-lg font-medium'>
             Do you want to:
           </label>
           <div className='flex flex-col gap-1'>
@@ -39,7 +77,7 @@ const Intentions = () => {
                 <label className='flex items-center gap-2'>
                   <input
                     type='radio'
-                    name='residency'
+                    name='intentions'
                     value={option.value}
                     checked={selectedOption === option.value}
                     onChange={e => setSelectedOption(e.target.value)}
@@ -53,7 +91,7 @@ const Intentions = () => {
                       Are you willing to show proof of funds?
                     </label>
                     <div className='flex gap-4'>
-                      <label className='flex items-center gap-2'>
+                      <label  className='flex items-center gap-2'>
                         <input
                           type='radio'
                           name='willingToBuy'
@@ -63,7 +101,7 @@ const Intentions = () => {
                         />
                         <span className='text-sm font-medium'>Yes</span>
                       </label>
-                      <label className='flex items-center gap-2'>
+                      <label  className='flex items-center gap-2'>
                         <input
                           type='radio'
                           name='willingToBuy'
@@ -93,20 +131,20 @@ const Intentions = () => {
                   Do you consent?
                 </label>
                 <div className='flex gap-4'>
-                  <label className='flex items-center gap-2'>
+                  <label htmlFor='consentYes' className='flex items-center gap-2'>
                     <input
                       type='radio'
-                      name='consent'
+                      name='consentYes'
                       checked={consent === true}
                       onChange={() => setConsent(true)}
                       className='h-4 w-4 border-gray-300 rounded-full text-primary accent-primary focus:ring-primary'
                     />
                     <span className='text-sm font-medium'>Yes</span>
                   </label>
-                  <label className='flex items-center gap-2'>
+                  <label htmlFor='consentNo' className='flex items-center gap-2'>
                     <input
                       type='radio'
-                      name='consent'
+                      name='consentNo'
                       checked={consent === false}
                       onChange={() => setConsent(false)}
                       className='h-4 w-4 border-gray-300 rounded-full text-primary accent-primary focus:ring-primary'
@@ -124,12 +162,12 @@ const Intentions = () => {
         <button className='border rounded-lg px-8 py-1 text-primary font-medium'>
           Cancel
         </button>
-        <button
-          type='submit'
-          className='bg-primary text-white px-8 py-1 rounded-md font-medium hover:bg-primary/95 transition duration-200'
-        >
-          Save Changes
-        </button>
+        <CalculateButton
+          text='Save Changes'
+          className='!w-fit px-10 !py-2'
+          onClick={handleIntentions}
+          loading={loading}
+        />
       </div>
     </div>
   )

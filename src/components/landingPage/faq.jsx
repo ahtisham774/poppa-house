@@ -2,6 +2,7 @@
 import { Collapse, Button } from "antd"
 import { RightOutlined } from "@ant-design/icons"
 import RightArrow from "../svg/rightArrow"
+import { useNavigate } from "react-router-dom"
 
 const { Panel } = Collapse
 
@@ -34,6 +35,14 @@ const faqs = [
 ]
 
 export function FAQ() {
+  const navigate = useNavigate()
+
+  const handleNavigate = () => {
+    navigate("/contact")
+  }
+
+
+
   return (
     <section
       className="py-16 my-20 bg-cover container bg-center relative flex flex-col items-center justify-center lg:justify-end w-full  lg:items-end"
@@ -58,7 +67,7 @@ export function FAQ() {
           ))}
         </Collapse>
         <div className="text-center mt-8 flex items-center w-full justify-center">
-          <Button size="large" className="bg-accent text-primary border-none hover:!bg-accent hover:!text-primary text-base font-semibold flex items-center gap-2">
+          <Button onClick={handleNavigate} size="large" className="bg-accent text-primary border-none hover:!bg-accent hover:!text-primary text-base font-semibold flex items-center gap-2">
             CONNECT US
             <span className=" shrink-0 -rotate-45">
                 <RightArrow/>

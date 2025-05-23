@@ -23,9 +23,9 @@ export function Footer () {
                 </a>
               </li>
               <li>
-                <a href='#' className='hover:text-accent'>
-                  Why Choose Us
-                </a>
+                <Link to="/register"  className='hover:text-accent'>
+                  Register to Advertise
+                </Link>
               </li>
               <li>
                 <a href='#' className='hover:text-accent'>

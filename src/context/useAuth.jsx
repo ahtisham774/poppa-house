@@ -1,32 +1,43 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react'
+import { getUser, setUser as setInfo } from '../api/apiClient'
 
-const AuthContext = createContext();
+
+const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState({
-        name: 'John Doe',
-        avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-        role: "client",
-        id: "Client-2025-001",
-        email: "john.doe@example.com",
-        phone: "+44 7700 900123",
-      })
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+  // {
+  //   name: 'John Doe',
+  //   avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+  //   role: 'staff',
+  //   id: 'Client-2025-001',
+  //   email: 'john.doe@example.com',
+  //   phone: '+44 7700 900123'
+  // }
 
-    const login = (userData) => {
-        setUser(userData);
-    };
+  useEffect(() => {
 
-    const logout = () => {
-        setUser(null);
-    };
+    setUser(getUser())
+    setLoading(false)
+  }, [])
 
-    return (
-        <AuthContext.Provider value={{ user, login,setUser, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
-};
+
+  const handleUserUpdate = (user) => {
+    setUser(user)
+    setInfo(user)
+    
+  }
+
+  
+
+  return (
+    <AuthContext.Provider value={{ user,loading,handleUserUpdate, setUser }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
 
 export const useAuth = () => {
-    return useContext(AuthContext);
-};
+  return useContext(AuthContext)
+}

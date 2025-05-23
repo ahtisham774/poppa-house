@@ -374,3 +374,34 @@ body {
 .submenu-item.active::before {
   background-color: #6b7280;
 }
+
+
+.ant-checkbox-inner{
+  border-radius: 100% !important;
+  padding: 0.5rem !important;
+}
+ .ant-checkbox-checked .ant-checkbox-inner {
+      background-color: #131E47 !important; /* Your desired color */
+      border-color: #131E47; /* Your desired color */
+    }
+
+.react-international-phone-input{
+  width: 100% !important;
+  border-color: #adadad;
+}
+   .border_b .react-international-phone-input{
+      border: none !important;
+      width: 100% !important;
+      border-bottom: 2px solid #adadad !important;
+      border-radius: 0 !important;
+    }
+   .border_b .react-international-phone-country-selector-button{
+      border: none !important;
+      border-bottom: 2px solid #adadad !important;
+      background: transparent !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      margin-right: 1rem !important;
+    }
+

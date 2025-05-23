@@ -1,17 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { billsConsolidationSteps } from '../../../data/billsConsolidationSteps'
 import RenderFields from './maintainence/renderFields'
+import { Form } from 'antd'
+import { useAuth } from '../../../context/useAuth'
+import clientProfileService from '../../../api/services/clientProfileService'
 
 const BillsConsolidation = () => {
+  const [form] = Form.useForm()
+
+  const { user } = useAuth()
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phoneNumber: '',
-    address: '',
-    city: '',
-    stateProvince: '',
-    postalCode: '',
-    country: '',
+
     estateAgentName: '',
     tenancyStartDate: '',
     baselineUtility: {
@@ -36,13 +38,48 @@ const BillsConsolidation = () => {
     termsAgreed: false
   })
 
+  useEffect(() => {
+    const getUserData = () => {
+      clientProfileService
+        .getClientProfile(user?.id)
+        .then(data => {
+          const { name, email, phoneNumber, address } = data
+          setFormData(prevData => ({
+            ...prevData,
+            fullName: name,
+            email,
+            phoneNumber,
+            address
+          }))
+        })
+        .catch(error => {
+          console.error('Error fetching client profile:', error)
+        })
+    }
+    if (user?.id) {
+      getUserData()
+    }
+  }, [])
+
   const handleFormChange = newData => {
+   
     setFormData({ ...formData, ...newData })
   }
 
-  const handleSubmitForm = () => {
+  const handleSubmitForm = values => {
     // Handle form submission logic here
-    console.log('Form submitted:', formData)
+    console.log('Form values:', values)
+    const updatedData = {
+      userId: user?.id,
+      ...values,
+      includedServices:{
+        electricity: formData?.baselineUtility?.electricity,
+      },
+
+      ...formData,
+
+    }
+    console.log('Form submitted:', updatedData)
   }
 
   return (
@@ -59,7 +96,11 @@ const BillsConsolidation = () => {
           </div>
         </div>
       </div>
-      <div className='flex flex-col gap-8'>
+      <Form
+        form={form}
+        onFinish={handleSubmitForm}
+        className='flex flex-col gap-8'
+      >
         {billsConsolidationSteps.map((step, index) => (
           <div key={index} className='flex flex-col gap-4 border-b'>
             <h3 className='text-lg font-semibold text-[#131e47]'>
@@ -75,6 +116,7 @@ const BillsConsolidation = () => {
                   <RenderFields
                     key={fieldIndex}
                     step={step}
+                    form={form}
                     formData={formData}
                     index={fieldIndex}
                     onChange={handleFormChange}
@@ -85,8 +127,7 @@ const BillsConsolidation = () => {
             </div>
           </div>
         ))}
-      </div>
-      <div className='flex gap-4 mt-8 justify-between'>
+         <div className='flex gap-4 mt-8 justify-between'>
         <button
           type='button'
           className='border rounded-lg flex-1 px-7 py-2 justify-center text-[#131e47] font-medium flex items-center gap-1'
@@ -95,13 +136,14 @@ const BillsConsolidation = () => {
         </button>
 
         <button
-          type='button'
+          type='submit'
           className='bg-[#131e47] flex-1 rounded-lg px-7 py-2 text-white font-medium'
-          onClick={handleSubmitForm}
         >
           Submit Request
         </button>
       </div>
+      </Form>
+     
     </div>
   )
 }

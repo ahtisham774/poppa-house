@@ -13,6 +13,7 @@ export function useModal() {
   return useContext(ModalContext);
 }
 
+
 export function ModalProvider({ children }) {
   const [modal, setModal] = useState(null); // modal: {type, props}
 
@@ -70,7 +71,7 @@ function ModalRenderer({ modal, close }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center  bg-black bg-opacity-40"
-      onClick={close}
+      
     >
       <div
         className="relative bg-white rounded-2xl overflow-hidden p-2 shadow-lg max-w-5xl w-full"

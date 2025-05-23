@@ -1,16 +1,39 @@
 
 import { useState } from "react"
 import { GoAlert } from "react-icons/go"
+import { useAuth } from "../../../context/useAuth"
+import authService from "../../../api/services/authService"
+import { showToast } from "../../../utils/toast"
 
 const ContactAdminModal = ({ onClose }) => {
   const [message, setMessage] = useState("")
+ const { user } = useAuth()
+ const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault()
+    setLoading(true)
     // Here you would handle sending the message to admin
-    console.log("Sending message to admin:", message)
-    alert("Message sent to admin")
-    onClose()
+    const data = {
+      issue: message,
+      username: user.name,
+      useremail: user.email
+    }
+   authService.contactAdmin(data)
+      .then(response => {
+        console.log('Message sent successfully:', response)
+        showToast('success', 'Message sent successfully!')
+        setMessage('')
+        onClose()
+      })
+      .catch(error => {
+        console.error('Error sending message:', error)
+        showToast('error', 'Failed to send message. Please try again.')
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+      
   }
 
   return (
@@ -46,7 +69,9 @@ const ContactAdminModal = ({ onClose }) => {
 
           <button
             type="submit"
-            className="w-full bg-primary text-white py-3 rounded-lg flex items-center justify-center"
+            disabled={loading}
+
+            className="w-full bg-primary text-white py-3 rounded-lg flex items-center disabled:opacity-60 disabled:animate-pulse justify-center"
           >
             <svg
               width="16"

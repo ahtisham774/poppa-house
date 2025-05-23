@@ -1,3 +1,5 @@
+import ShowProfile from '../../common/showProfile'
+
 const Header = ({ user, handleSidebar }) => {
   return (
     <div className='flex justify-between md:justify-end items-center  bg-white border-b p-5'>
@@ -79,11 +81,7 @@ const Header = ({ user, handleSidebar }) => {
             </button>
           </div>
         </div>
-        <img
-          src={user.avatar}
-          alt='User Avatar'
-          className='h-10 w-10 rounded-full object-cover'
-        />
+        <ShowProfile />
       </div>
     </div>
   )
