@@ -28,7 +28,7 @@ const SocialLogin = () => {
       setLoading(false)
       showToast('success', 'Login successful!')
      
-        navigate('/')
+         navigate(user?.role == "Staff" ? "/staff/dashboard" : user?.role == "Client" ? "/client/dashboard" : "/"); // Redirect based on user role
       
     }
   }, [searchParams])

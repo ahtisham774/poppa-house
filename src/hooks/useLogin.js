@@ -16,7 +16,7 @@ export const useLogin = () => {
     try {
       const response = await authService.registerBasic(userData);
       setUser(response.user);
-      navigate('/'); // Redirect to home page after registration
+     navigate(response?.user?.role == "Staff" ? "/staff/dashboard" : response?.user?.role == "Client" ? "/client/dashboard" : "/"); // Redirect based on user role
       return response;
     } catch (err) {
       setError(err.message || 'Registration failed');
@@ -32,7 +32,7 @@ export const useLogin = () => {
     try {
       const response = await authService.login(email, password);
       setUser(response.user);
-      navigate('/'); // Redirect to home page after login
+      navigate(response?.user?.role == "Staff" ? "/staff/dashboard" : response?.user?.role == "Client" ? "/client/dashboard" : "/"); // Redirect based on user role
       return response;
     } catch (err) {
       setError(err.message || 'Invalid Credentials');
