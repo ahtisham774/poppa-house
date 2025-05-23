@@ -556,7 +556,7 @@ import {
 import { useAuth } from '../../../context/useAuth'
 import { showToast } from '../../../utils/toast'
 import clientDocumentService from '../../../api/services/clientDocumentService'
-import DocumentUploadModal from './DocumentUploadModal'
+import DocumentUploadModal from './documentUploadModal'
 import cloudinaryService from '../../../api/cloudinaryService'
 
 
@@ -687,56 +687,56 @@ const Documents = () => {
   const [selectedDocument, setSelectedDocument] = useState(null)
   const [viewingDocument, setViewingDocument] = useState(null)
 
-const fetchFileDetailsAndUpdate = async () => {
-  try {
-    const filesWithDetails = await Promise.all(
-      documents.map(async (doc) => {
-        const fileName = doc.url.split('/').pop();
-        const fileType = doc.url.match(/\.(jpg|jpeg|png|gif)$/i)
-          ? 'Image'
-          : doc.url.match(/\.(pdf)$/i)
-          ? 'Document'
-          : doc.url.match(/\.(mp4|mov|avi)$/i)
-          ? 'Video'
-          : 'Document';
+// const fetchFileDetailsAndUpdate = async () => {
+//   try {
+//     const filesWithDetails = await Promise.all(
+//       documents.map(async (doc) => {
+//         const fileName = doc.url.split('/').pop();
+//         const fileType = doc.url.match(/\.(jpg|jpeg|png|gif)$/i)
+//           ? 'Image'
+//           : doc.url.match(/\.(pdf)$/i)
+//           ? 'Document'
+//           : doc.url.match(/\.(mp4|mov|avi)$/i)
+//           ? 'Video'
+//           : 'Document';
 
-        let fileSizeFormatted = 'N/A';
-        let width = null;
-        let height = null;
+//         let fileSizeFormatted = 'N/A';
+//         let width = null;
+//         let height = null;
 
-        // Only fetch from Cloudinary if it's an image (or supported by metadata endpoint)
-        if (fileType === 'Image') {
-          try {
-            const details = await cloudinaryService.getFileDetailsFromCloudinary(doc.url);
-            fileSizeFormatted = `${(details.size / 1024).toFixed(1)} KB`;
-            width = details.width;
-            height = details.height;
-          } catch (err) {
-            console.warn(`Could not fetch metadata for ${fileName}:`, err.message);
-          }
-        }
+//         // Only fetch from Cloudinary if it's an image (or supported by metadata endpoint)
+//         if (fileType === 'Image') {
+//           try {
+//             const details = await cloudinaryService.getFileDetailsFromCloudinary(doc.url);
+//             fileSizeFormatted = `${(details.size / 1024).toFixed(1)} KB`;
+//             width = details.width;
+//             height = details.height;
+//           } catch (err) {
+//             console.warn(`Could not fetch metadata for ${fileName}:`, err.message);
+//           }
+//         }
 
-        return {
-          id: doc.id,
-          fileName,
-          fileType,
-          fileSize: fileSizeFormatted,
-          width,
-          height,
-          uploadedDate: new Date(doc.uploadedAt._seconds * 1000).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })
-        };
-      })
-    );
+//         return {
+//           id: doc.id,
+//           fileName,
+//           fileType,
+//           fileSize: fileSizeFormatted,
+//           width,
+//           height,
+//           uploadedDate: new Date(doc.uploadedAt._seconds * 1000).toLocaleDateString('en-US', {
+//             year: 'numeric',
+//             month: 'long',
+//             day: 'numeric'
+//           })
+//         };
+//       })
+//     );
 
-    setUploadedFiles(filesWithDetails);
-  } catch (error) {
-    console.error('Error fetching file details:', error);
-  }
-};
+//     setUploadedFiles(filesWithDetails);
+//   } catch (error) {
+//     console.error('Error fetching file details:', error);
+//   }
+// };
 
 
   useEffect(() => {
