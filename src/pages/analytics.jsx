@@ -2,8 +2,8 @@ import { Select } from 'antd'
 import ContainerLayout from '../utils/containerLayout'
 import Filters from '../components/listerPortal/analytics/filters'
 import CardItems from '../components/listerPortal/analytics/cardItems'
-import ComparisonCards from '../components/listerPortal/analytics/ComparisonCards'
-import PerformanceCard from '../components/listerPortal/analytics/performanceCard'
+import ComparisonCards from '../components/listerPortal/analytics/comparisonCards'
+
 import PerformanceCards from '../components/listerPortal/analytics/performanceCards'
 
 const Analytics = () => {
