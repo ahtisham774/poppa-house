@@ -5,8 +5,31 @@ import CardItems from '../components/listerPortal/analytics/cardItems'
 import ComparisonCards from '../components/listerPortal/analytics/comparisonCards'
 
 import PerformanceCards from '../components/listerPortal/analytics/performanceCards'
+import Tabs from '../components/common/tabs'
 
 const Analytics = () => {
+  const tabs = [
+    {
+      name: 'performance',
+      title: 'Performance'
+    },
+    {
+      name: 'conversionFunnel',
+      title: 'Conversion Funnel'
+    },
+    {
+      name: 'comparison',
+      title: 'Comparison'
+    },
+    {
+      name: 'trafficSources',
+      title: 'Traffic Sources'
+    },
+    {
+      name: 'benchmarks',
+      title: 'Benchmarks'
+    }
+  ]
   return (
     <ContainerLayout>
       <div className='flex flex-wrap justify-between items-end gap-3'>
@@ -69,6 +92,11 @@ const Analytics = () => {
       <CardItems />
       <ComparisonCards />
       <PerformanceCards />
+      <Tabs
+      tabs={tabs}
+      activeTab='performance'
+      handleTabChange={(tabName) => console.log(`Active Tab: ${tabName}`)}
+      />
     </ContainerLayout>
   )
 }
