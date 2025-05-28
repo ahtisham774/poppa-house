@@ -12,6 +12,8 @@ import {
   ServiceDate
 } from '../components/clientPortal/activities/showPropertiesList'
 import { useNavigate } from 'react-router-dom'
+import clientJobsService from '../api/services/clientJobsService'
+import { useAuth } from '../context/useAuth'
 
 export const DetailButton = ({ text, onClick, className, icon }) => {
   return (
@@ -160,7 +162,7 @@ export const ongoingActivities = [
   }
 ]
 
-export const RenderOngoingActivityCard = ({activity, i}) => {
+export const RenderOngoingActivityCard = ({ activity, i }) => {
   const navigate = useNavigate()
   const handleViewDetail = id => {
     navigate(`/client/activities/${id}`)
@@ -268,6 +270,7 @@ export const RenderOngoingActivityCard = ({activity, i}) => {
 const ActivitiesPage = () => {
   const [activeTab, setActiveTab] = useState('ongoing')
   const [viewMode, setViewMode] = useState('grid')
+  const { user } = useAuth()
 
   const [filteredActivities, setFilteredActivities] = useState([])
   const [filters, setFilters] = useState({
@@ -281,6 +284,23 @@ const ActivitiesPage = () => {
     { name: 'ongoing', title: 'Ongoing Activities' },
     { name: 'history', title: 'History' }
   ]
+
+  useEffect(() => {
+    const getActivities = () => {
+      clientJobsService
+        .getClientJobs(user?.id)
+        .then(response => {
+          console.log('Activities fetched:', response.data)
+          // setFilteredActivities(response.data)
+        })
+        .catch(error => {
+          console.error('Error fetching activities:', error)
+        })
+    }
+    if (user) {
+      getActivities()
+    }
+  }, [])
 
   // Mock data for ongoing activities
 
@@ -583,9 +603,9 @@ const ActivitiesPage = () => {
         {activeTab === 'ongoing' ? (
           // Render ongoing activities
           <>
-            {filteredActivities?.map((activity, i) =>
-            ( <RenderOngoingActivityCard key={i} activity={activity} i={i} />)
-            )}
+            {filteredActivities?.map((activity, i) => (
+              <RenderOngoingActivityCard key={i} activity={activity} i={i} />
+            ))}
           </>
         ) : (
           // Render history activities

@@ -8,11 +8,13 @@ const VerificationCard = ({
   description,
   submittedDate,
   verifiedDate,
+  documentUrl,
   onClick
 }) => {
   const getStatusBadge = () => {
     switch (status) {
       case 'required':
+      case 'not submitted':
         return (
           <div className='flex items-center gap-1 px-2 py-1 rounded-md bg-[#E9E9E9]'>
             <svg
@@ -73,42 +75,56 @@ const VerificationCard = ({
         return null
     }
   }
-
+  const handleViewDocument = url => {
+    if (url) {
+      window.open(url, '_blank')
+    }
+  }
   return (
     <div
       onClick={onClick}
-      className='bg-white border-2 cursor-pointer border-[#b1b1b171]  rounded-lg p-4 relative hover:shadow-md transition-shadow'
+      className='bg-white border-2 cursor-pointer border-[#b1b1b171] rounded-lg p-4 relative hover:shadow-md transition-shadow'
     >
-      <div className='flex justify-between items-start mb-2'>
-        <div className='flex items-start'>
-          {icon}
-          <div className='ml-3 -mt-1'>
+      <div className='flex justify-between flex-wrap-reverse  gap-5 items-end mb-2'>
+        <div className='flex items-start flex-wrap gap-3'>
+          <span className='shrink-0'>{icon}</span>
+          <div className='-mt-1'>
             <h3 className='text-base font-semibold text-gray-900'>{label}</h3>
             <p className='text-sm text-[#888888]'>{description}</p>
-            {status === 'pending' && (
-              <div className=' text-sm text-gray-500'>
-                Submitted on {submittedDate}
-              </div>
-            )}
-
-            {status === 'verified' && (
-              <div className=' text-sm text-gray-500'>
-                Verified on {verifiedDate || submittedDate}
+            {(status === 'pending' || status === 'verified') && submittedDate && (
+              <div className='text-sm text-gray-500'>
+                {status === 'verified' ? 'Verified' : 'Submitted'} on{' '}
+                {submittedDate}
               </div>
             )}
           </div>
         </div>
-        <div>{getStatusBadge()}</div>
+        <div className='ml-auto'>{getStatusBadge()}</div>
       </div>
 
-      {/* <button
-        onClick={onClick}
-        className="mt-3 w-full text-center py-2 bg-primary text-white rounded-md hover:bg-primary/95 transition-colors"
-      >
-        {status === 'required' && 'Upload Document'}
-        {status === 'pending' && 'View Status'}
-        {status === 'verified' && 'View Document'}
-      </button> */}
+      {documentUrl && typeof documentUrl === 'string' && (
+        <button
+          onClick={(e) => {e.stopPropagation();handleViewDocument(documentUrl)}}
+          type='button'
+          className='mt-2 w-full text-center py-1.5 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors'
+        >
+          View Document
+        </button>
+      )}
+      {documentUrl && Array.isArray(documentUrl) && (
+        <div className='flex flex-col gap-2 mt-2'>
+          {documentUrl.map((url, index) => (
+            <button
+              key={index}
+              onClick={(e) => {e.stopPropagation(); handleViewDocument(url)}}
+              type='button'
+              className='w-full text-center py-1.5 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors'
+            >
+              View Document {index + 1}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

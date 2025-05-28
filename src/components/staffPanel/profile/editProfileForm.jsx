@@ -6,6 +6,7 @@ import { useAuth } from '../../../context/useAuth'
 import { PhoneInput } from 'react-international-phone'
 import staffProfileService from '../../../api/services/staffProfileService'
 import Loader from '../../common/loader'
+import Certificates from './certificates'
 
 const EditProfileForm = ({ userData }) => {
   const { user, handleUserUpdate } = useAuth()
@@ -19,7 +20,8 @@ const EditProfileForm = ({ userData }) => {
     dob: '',
     gender: '',
     specialties: '',
-    about: ''
+    about: '',
+    certificates: []
   })
 
   useEffect(() => {
@@ -32,7 +34,8 @@ const EditProfileForm = ({ userData }) => {
         dob: userData?.dob,
         gender: userData.gender,
         specialties: userData?.specialties,
-        about: userData?.about
+        about: userData?.about,
+        certificates: userData?.certificates || []
       })
     }
   }, [userData])
@@ -98,7 +101,7 @@ const EditProfileForm = ({ userData }) => {
 
   return (
     <>
-      <div className='bg-white rounded-lg shadow border border-gray-100 p-6 mb-6'>
+      <div className='bg-white rounded-lg shadow border border-gray-100 p-3 md:p-6 mb-6'>
         <div className='flex items-center mb-6'>
           <svg
             className='h-6 w-6 mr-2 text-gray-700'
@@ -363,6 +366,18 @@ const EditProfileForm = ({ userData }) => {
               onChange={handleChange}
               rows={5}
               className='w-full p-1 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
+            />
+          </div>
+
+          <div className='mb-6'>
+            <Certificates
+              uploadedCertificates={formData?.certificates || []}
+              handleUpdateCertificates={files => {
+                setFormData(prev => ({
+                  ...prev,
+                  certificates: files
+                }))
+              }}
             />
           </div>
 

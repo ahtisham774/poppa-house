@@ -4,7 +4,7 @@ import FormField from './formField';
 import RenderFields from './renderFields';
 
 const CheckboxGroup = ({ field, formData, onChange, onNestedChange }) => {
-  const { name, label,full, description, options, subFields } = field;
+  const { name, label,full,grid, description, options, subFields } = field;
 
 
 
@@ -21,16 +21,20 @@ const CheckboxGroup = ({ field, formData, onChange, onNestedChange }) => {
       {label && <label className="block mb-1  font-medium text-[#131e47]">{label}</label>}
       {description && <p className="text-xs text-gray-500 mb-2">{description}</p>}
       
-      <div className="space-y-2">
+      <div  className={
+          grid
+            ? `grid grid-cols-1 md:grid-cols-${grid}  `
+            : 'space-y-2'
+        }>
         {options.map((option, index) => (
-          <div key={index} className="mb-2">
-             <label className="inline-flex items-center cursor-pointer">
+          <div key={index} className={`mb-2 ${option.subFields ? "col-span-1 sm:col-span-2" : ""}`}>
+             <label className="inline-flex items-start cursor-pointer">
               <input
                 type="checkbox"
                 name={option.name}
                 checked={formData[name][option.name] || false}
                 onChange={((e)=> onNestedChange(name, option.name, e.target.checked))}
-                className="relative mr-2 appearance-none size-4 border-2 border-[#131e47] rounded-full checked:bg-white focus:outline-none focus:ring-0 transition-colors duration-200"
+                className="relative mr-2 shrink-0 appearance-none size-4 border-2 border-[#131e47] rounded-full checked:bg-white focus:outline-none focus:ring-0 transition-colors duration-200"
                 style={{
                   backgroundImage: formData[name][option.name] ? 'radial-gradient(circle, #131e47 0%, #131e47 40%, white 40%, white 100%)' : 'none'
                 }}

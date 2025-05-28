@@ -53,7 +53,8 @@ import ClientActivitiesPage from './pages/clientActivities'
 import PageLayout from './components/common/pageLayout'
 import ViewClientActivity from './pages/viewClientActivity'
 import HelpAndSupport from './pages/helpAndSupport'
-
+import CommissionTracker from './pages/commissionTracker'
+import Analytics from './pages/analytics'
 
 const ProtectedRoute = ({ children, roles }) => {
   const { user } = useAuth()
@@ -100,7 +101,6 @@ const AuthenticatedLayout = ({ role }) => {
 function App () {
   const { user, setUser, loading } = useAuth()
 
-
   if (loading) {
     return (
       <div className='flex items-center justify-center h-screen'>
@@ -108,10 +108,9 @@ function App () {
       </div>
     )
   }
-  
+
   return (
     <Routes>
-     
       <Route
         element={
           <Layout>
@@ -175,13 +174,21 @@ function App () {
           </Route>
         </Route>
 
-         <Route path='help' element={<HelpAndSupport />} />
+        <Route path='help' element={<HelpAndSupport />} />
 
         <Route path='info' element={<InfoCenter />} />
         <Route path='training/:id' element={<TrainingDetailsPage />} />
         <Route path='training-materials' element={<TrainingMaterialsPage />} />
         <Route path='announcements' element={<AnnouncementsPage />} />
         <Route path='announcements/:id' element={<Announcement />} />
+        <Route
+          path='*'
+          element={
+            <h1 className='text-center text-2xl font-bold mt-10'>
+              There is nothing here yet!
+            </h1>
+          }
+        />
       </Route>
       <Route
         path='client'
@@ -226,10 +233,42 @@ function App () {
           <Route path='user-profile/:id' element={<UserProfile />} />
         </Route>
         <Route path='profile' element={<ClientProfile />} />
+        <Route
+          path='*'
+          element={
+            <h1 className='text-center text-2xl font-bold mt-10'>
+              There is nothing here yet!
+            </h1>
+          }
+        />
+      </Route>
+
+      <Route
+        path='lister'
+        element={
+          <ProtectedRoute roles={['lister']}>
+            <AuthenticatedLayout role='lister' />
+          </ProtectedRoute>
+        }
+      >
+        <Route
+          path='dashboard'
+          element={<h1>Lister Dashboard Coming Soon!</h1>}
+        />
+        <Route path='commissions-tracker' element={<CommissionTracker />} />
+        <Route path='analytics' element={<Analytics />} />
+
+        <Route
+          path='*'
+          element={
+            <h1 className='text-center text-2xl font-bold mt-10'>
+              Lister Dashboard Coming Soon!
+            </h1>
+          }
+        />
       </Route>
 
       <Route path='*' element={<h1>404 Not Found</h1>} />
-    
     </Routes>
   )
 }

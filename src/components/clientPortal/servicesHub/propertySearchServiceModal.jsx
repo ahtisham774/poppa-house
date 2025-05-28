@@ -3,6 +3,7 @@ import { useModal } from '../../../context/useModal'
 import { useAuth } from '../../../context/useAuth'
 import Loader from '../../common/loader'
 import clientProfileService from '../../../api/services/clientProfileService'
+import serviceHub from '../../../api/services/servicesHub'
 
 export function PropertySearchServiceModal ({ close }) {
   const [tab, setTab] = React.useState(0)
@@ -71,7 +72,6 @@ export function PropertySearchServiceModal ({ close }) {
             phoneNumber: data.phoneNumber,
             preferredCountry: data?.address?.country,
             preferredCity: data?.address?.city
-
           }))
         })
         .catch(error => {
@@ -187,9 +187,20 @@ export function PropertySearchServiceModal ({ close }) {
     console.log('Formatted search data:', formattedData)
 
     try {
+      setLoading(true)
       // Here you would typically make an API call
-      // await api.submitPropertySearchRequest(formattedData)
-      close()
+      serviceHub
+        .addPropertySearch(formattedData)
+        .then(response => {
+          console.log('Property search submitted successfully:', response)
+        })
+        .catch(error => {
+          console.error('Error submitting property search:', error)
+        })
+        .finally(() => {
+          setLoading(false)
+          close()
+        })
       // Optionally show success message
     } catch (error) {
       console.error('Submission error:', error)
@@ -198,7 +209,7 @@ export function PropertySearchServiceModal ({ close }) {
   }
 
   return (
-    <div className='p-7 w-full max-h-[90vh] overflow-y-auto'>
+    <div className='p-3 lg:p-7 w-full max-h-[90vh] overflow-y-auto'>
       <div className='flex justify-between items-center mb-2'>
         <h2 className='text-2xl font-semibold text-primary'>
           Property Search Service
@@ -209,7 +220,7 @@ export function PropertySearchServiceModal ({ close }) {
         you'd like to proceed:
       </div>
 
-      <div className='bg-white rounded-lg br flex mb-6 p-2'>
+      <div className='bg-white rounded-lg br flex mb-6 p-2 overflow-x-auto whitespace-nowrap'>
         <button
           className={`flex items-center justify-center flex-1 py-1 rounded-sm px-6 text-sm font-medium transition-colors duration-200 ${
             tab === 0
@@ -238,7 +249,7 @@ export function PropertySearchServiceModal ({ close }) {
             Schedule a Call with Our Agent
           </h3>
 
-          <div className='grid grid-cols-2 gap-4 mb-4'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
             <div>
               <label className='block mb-1 text-sm text-primary font-medium'>
                 First Name
@@ -278,12 +289,12 @@ export function PropertySearchServiceModal ({ close }) {
             />
           </div>
 
-          <div className='grid grid-cols-2 gap-4 mb-4'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
             <div>
               <label className='block mb-1 text-sm text-primary font-medium'>
                 Preferred Country
               </label>
-             <input
+              <input
                 name='preferredCountry'
                 value={scheduleForm.preferredCountry}
                 onChange={handleScheduleChange}
@@ -306,7 +317,7 @@ export function PropertySearchServiceModal ({ close }) {
             </div>
           </div>
 
-          <div className='grid grid-cols-2 gap-4 mb-5'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-5'>
             <div>
               <label className='block mb-1 text-sm text-primary font-medium'>
                 Call Scheduling Calendar
@@ -360,8 +371,10 @@ export function PropertySearchServiceModal ({ close }) {
             </button>
             <button
               type='submit'
-              className='bg-primary flex-1 rounded-lg px-7 py-2 text-white font-medium'
+              disabled={loading}
+              className='bg-[#131e47] flex-1 rounded-lg disabled:bg-opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 px-7 py-2 text-white font-medium'
             >
+              {loading && <Loader variants='sm' />}
               Submit Request
             </button>
           </div>
@@ -373,7 +386,7 @@ export function PropertySearchServiceModal ({ close }) {
               1. Personal Information
             </h3>
 
-            <div className='grid grid-cols-2 gap-4 mb-4'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
               <div>
                 <label className='block mb-1 text-sm text-primary font-medium'>
                   Full Name
@@ -469,7 +482,7 @@ export function PropertySearchServiceModal ({ close }) {
               <label className='block mb-1 text-sm text-primary font-medium'>
                 Property Type
               </label>
-              <div className='flex gap-6 mt-1 font-medium text-sm'>
+              <div className='flex flex-wrap gap-6 mt-1 font-medium text-sm'>
                 <label className='inline-flex items-center'>
                   <input
                     type='radio'
@@ -532,12 +545,12 @@ export function PropertySearchServiceModal ({ close }) {
               </div>
             )}
 
-            <div className='grid grid-cols-2 gap-6 mb-4'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-4'>
               <div>
                 <label className='block mb-1 text-sm text-primary font-medium'>
                   Number of Bedrooms
                 </label>
-                <div className='flex gap-4 mt-1'>
+                <div className='flex flex-wrap gap-4 mt-1'>
                   <label className='inline-flex items-center'>
                     <input
                       type='radio'
@@ -589,7 +602,7 @@ export function PropertySearchServiceModal ({ close }) {
                 <label className='block mb-1 text-sm text-primary font-medium'>
                   Number of Bathrooms
                 </label>
-                <div className='flex gap-4 mt-1'>
+                <div className='flex flex-wrap gap-4 mt-1'>
                   <label className='inline-flex items-center'>
                     <input
                       type='radio'
@@ -638,7 +651,7 @@ export function PropertySearchServiceModal ({ close }) {
               </div>
             </div>
 
-            <div className='grid grid-cols-3 gap-6 mb-6'>
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-6'>
               <div>
                 <label className='block mb-1 text-sm text-primary font-medium'>
                   Furnished or Unfurnished?
@@ -768,7 +781,7 @@ export function PropertySearchServiceModal ({ close }) {
               3. Location & Budget
             </h3>
 
-            <div className='grid grid-cols-2 gap-4 mb-4'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
               <div>
                 <label className='block mb-1 text-sm text-primary font-medium'>
                   Country
@@ -823,7 +836,7 @@ export function PropertySearchServiceModal ({ close }) {
               />
             </div>
 
-            <div className='grid grid-cols-2 gap-4 mb-4'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
               <div>
                 <label className='block mb-1 text-sm text-primary font-medium'>
                   Maximum Budget (£ per month)
@@ -897,7 +910,7 @@ export function PropertySearchServiceModal ({ close }) {
               4. Additional Preferences
             </h3>
 
-            <div className='grid grid-cols-3 gap-x-6 gap-y-2 mb-4 font-medium text-sm'>
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-2 mb-4 font-medium text-sm'>
               <label className='inline-flex items-center'>
                 <input
                   type='checkbox'
@@ -1120,7 +1133,7 @@ export function RefundPolicyModal ({ close }) {
   }
 
   return (
-    <div className='w-full p-10 max-h-[90vh] overflow-y-auto'>
+    <div className='w-full p-4 lg:p-10 max-h-[90vh] overflow-y-auto'>
       <div className='flex justify-between items-center mb-4'>
         <h2 className='text-2xl font-semibold text-primary'>
           Proppa House – Property Search Refund Policy

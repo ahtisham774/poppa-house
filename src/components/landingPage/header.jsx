@@ -76,7 +76,7 @@ export function Header () {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className='hidden md:flex items-center space-x-8'>
+        <nav className='hidden lg:flex items-center space-x-8'>
           {navLinks.map(link => (
             <Link
               key={link.path}
@@ -89,7 +89,7 @@ export function Header () {
         </nav>
 
         {/* Mobile Menu Button */}
-        <div className='md:hidden flex items-center gap-2'>
+        <div className='lg:hidden flex items-center gap-2'>
           {isLoggedIn && (
             <ShowProfile />
           )}
@@ -103,7 +103,7 @@ export function Header () {
         </div>
 
         {/* Desktop Buttons */}
-        <div className='hidden md:flex items-center space-x-4'>
+        <div className='hidden lg:flex items-center space-x-4'>
           <Button
             onClick={gotoCareers}
             className='bg-secondary text-base font-medium py-4 rounded-lg hover:!bg-secondary hover:!text-foreground/30 text-foreground'
@@ -214,7 +214,7 @@ export function Header () {
         {/* Backdrop overlay */}
         {menuOpen && (
           <div
-            className='fixed inset-0 bg-black/50 z-40 md:hidden'
+            className='fixed inset-0 bg-black/50 z-40 lg:hidden'
             onClick={toggleMenu}
           />
         )}
@@ -222,7 +222,7 @@ export function Header () {
         {/* Backdrop for dropdown */}
         {dropdownOpen && (
           <div
-            className='fixed inset-0 z-40 hidden md:block'
+            className='fixed inset-0 z-40 hidden lg:block'
             onClick={() => setDropdownOpen(false)}
           />
         )}

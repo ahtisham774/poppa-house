@@ -11,11 +11,11 @@ import { Form } from 'antd'
 export function PropertyViewingPackagesModal ({ close }) {
   const { openModal } = useModal()
   return (
-    <div className='p-8 pb-7 w-full'>
+    <div className='p-3 lg:p-8 pb-7 w-full'>
       <h2 className='text-2xl font-semibold text-primary'>
         Choose Your Property Viewing Package
       </h2>
-      <div className='mt-8 flex gap-6'>
+      <div className='mt-8 grid grid-cols-[repeat(auto-fit,minmax(20rem,1fr))] gap-6'>
         {[
           {
             title: 'Basic Property Viewing',
@@ -270,7 +270,7 @@ export function ProPropertyViewingFormModal ({ type, close }) {
   return (
     <Form
       form={formInput}
-      className='p-9 w-full max-h-[90vh] overflow-y-auto'
+      className='p-3 lg:p-9 w-full max-h-[90vh] overflow-y-auto'
       onFinish={handleSubmit}
     >
       <div className='flex justify-between items-center mb-1'>

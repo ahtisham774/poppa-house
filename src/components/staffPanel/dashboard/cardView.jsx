@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 const CardView = ({ title, icon, viewAll, list }) => {
   return (
     <div className='flex flex-col gap-5'>
-      <div className='flex justify-between items-center'>
+      <div className='flex justify-between flex-wrap gap-2 items-center'>
         <div className='flex items-center gap-2'>
           {icon && icon}
           <h2 className='text-2xl -mt-1 font-medium text-primary'>{title}</h2>
@@ -11,7 +11,7 @@ const CardView = ({ title, icon, viewAll, list }) => {
         {viewAll && (
           <Link
             to={viewAll}
-            className='flex items-center font-medium text-sm text-[#2B4BB4]'
+            className='flex items-center font-medium text-sm text-[#2B4BB4] ml-auto'
           >
             View All
             <svg
@@ -38,11 +38,13 @@ const CardView = ({ title, icon, viewAll, list }) => {
               key={item?.id}
               className='border-b border-[#D5D5D5] pb-4 mb-2 last:border-b-0 last:pb-0 last:mb-0'
             >
-              <div className='flex justify-between mb-1'>
+              <div className='flex justify-between flex-wrap-reverse gap-2 mb-1'>
                 <h3 className='text-base font-medium text-gray-900'>
                   {item?.title}
                 </h3>
-                <span className='text-xs text-[#888888]'>{item?.date}</span>
+                <span className='text-xs text-[#888888] ml-auto'>
+                  {item?.date}
+                </span>
               </div>
               <p className='text-sm text-[#505050] max-w-sm'>
                 {item?.description}

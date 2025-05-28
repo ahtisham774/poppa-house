@@ -104,7 +104,7 @@ const FormField = ({ field, form, value, onChange }) => {
         return (
           <DatePicker
             name={name}
-            className='w-full p-1.5 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
+            className='w-full p-1 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary'
             value={value ? dayjs(value) : null}
             onChange={date => {
               const formattedDate = date ? date.format('YYYY-MM-DD') : ''
@@ -128,7 +128,7 @@ const FormField = ({ field, form, value, onChange }) => {
             min={min}
             max={max}
             step={step}
-            className='w-full border rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#131e47] focus:border-[#131e47]'
+            className='w-full border rounded-lg px-3 py-1 text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#131e47] focus:border-[#131e47]'
           />
         )
       case 'file':
@@ -184,7 +184,7 @@ const FormField = ({ field, form, value, onChange }) => {
             placeholder={placeholder}
             required={required}
             disabled={disabled}
-            className='w-full border rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#131e47] focus:border-[#131e47]'
+            className='w-full border rounded-lg px-3 py-1 text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#131e47] focus:border-[#131e47]'
           />
         )
     }

@@ -24,9 +24,9 @@ const JobHistoryCard = () => {
 
   return (
     <div className="bg-white rounded-lg shadow border border-gray-100 p-6">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between flex-wrap gap-3 items-center mb-4">
         <h2 className="text-xl font-medium text-gray-900">Job History</h2>
-        <a href="#" className="flex items-center text-sm ">
+        <a href="#" className="flex items-center text-sm ml-auto">
           View All
           <svg
             className="ml-1 h-4 w-4"
@@ -47,9 +47,9 @@ const JobHistoryCard = () => {
       <div className="space-y-4">
         {jobHistory.map(job => (
           <div key={job.id} className="border-b border-[#D5D5D5] pb-4 mb-2 last:border-b-0 last:pb-0 last:mb-0">
-            <div className="flex justify-between mb-1">
+            <div className="flex justify-between flex-wrap-reverse gap-2 mb-1">
               <h3 className="text-base font-medium text-gray-900">{job.title}</h3>
-              <span className="px-4 py-1 text-xs rounded-lg bg-green-100 font-medium text-green-800">
+              <span className="px-4 py-1 text-xs rounded-lg bg-green-100 ml-auto font-medium text-green-800">
                 {job.status}
               </span>
             </div>

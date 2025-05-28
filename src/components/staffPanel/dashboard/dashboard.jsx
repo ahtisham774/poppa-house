@@ -7,7 +7,7 @@ import { useAuth } from '../../../context/useAuth';
 const Dashboard = ({  stats }) => {
   const {user} = useAuth()
   return (
-    <div className="p-6">
+    <div className="p-3 md:p-6">
       <div className='flex flex-col mb-5'>
           <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
           <p className="text-sm text-gray-500">Welcome back, {user.name}</p>

@@ -74,7 +74,7 @@ function ModalRenderer({ modal, close }) {
       
     >
       <div
-        className="relative bg-white rounded-2xl overflow-hidden p-2 shadow-lg max-w-5xl w-full"
+        className="relative bg-white rounded-2xl m-2 overflow-hidden p-2 shadow-lg max-w-5xl w-full"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -83,7 +83,7 @@ function ModalRenderer({ modal, close }) {
         >
           ×
         </button>
-        <div className="max-h-[90vh] w-full overflow-auto">
+        <div className="max-h-[90vh]  w-full overflow-auto">
           <ModalComp {...modal.props} close={close} />
         </div>
       </div>

@@ -44,7 +44,7 @@ const SocialLogin = () => {
   }
 
   return (
-    <div className='flex items-center justify-center gap-5'>
+    <div className='flex items-center flex-wrap justify-center gap-5'>
       {loading && (
         <div className='flex items-center fixed inset-0 z-10 bg-[rgba(0,0,0,0.3)] justify-center'>
           <div className='size-10 border-4 border-t-4 border-gray-200 border-t-primary rounded-full animate-spin'></div>

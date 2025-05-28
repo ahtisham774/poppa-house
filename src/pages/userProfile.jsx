@@ -9,6 +9,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom'
 import Reviews from '../components/clientPortal/profile/reviews'
 import { mockReviews } from '../data/review'
+import ProfileHeader from '../components/staffPanel/profile/profileHeader'
 
 const UserProfile = () => {
   const [userData, setUserData] = useState(null)
@@ -28,7 +29,7 @@ const UserProfile = () => {
       const mockUser = {
         id: userId || 'emp-2025-001',
         name: 'John Doe',
-        avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+        profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg',
         title: 'Property Specialist',
         employeeId: 'Employee-2025-001',
         isAvailable: true,
@@ -232,45 +233,20 @@ const UserProfile = () => {
       {/* Content */}
       <div className='flex-1 p-6 space-y-6'>
         {/* Profile Section */}
-        <div className='bg-white rounded-lg br p-6'>
-          <div className='flex flex-col md:flex-row items-center md:items-start gap-6'>
-            <div className='w-24 h-24 rounded-full overflow-hidden'>
-              <img
-                src={userData.avatar || '/placeholder.svg'}
-                alt={userData.name}
-                className='w-full h-full object-cover'
-              />
-            </div>
+       <ProfileHeader
+        name={userData?.name}
+        title={`${userData?.title || 'Property Specialist'} ID:(${userData?.employeeId})`}
+        avatar={userData?.profilePicture}
+        available={userData?.isAvailable}
+        allow_update_profile={false}
+        allow_update_availability={false}
+        bio={userData?.bio}
+        handleUpdateAvailability={newAvailability => {
+          setUserData(prev => ({ ...prev, isAvailable: newAvailability }))
+        }}
+        handleSubmit={() => {}}
 
-            <div className='flex-1 text-center md:text-left'>
-              <h2 className='text-2xl font-semibold'>{userData.name}</h2>
-              <p className='text-[#888888] text-sm mt-1'>
-                {userData.title} | ID: {userData.employeeId}
-              </p>
-
-              <div className='mt-3 flex items-center justify-center md:justify-start'>
-                <div
-                  className={`w-12 h-6 rounded-full flex items-center ${
-                    userData.isAvailable ? 'bg-blue-900' : 'bg-gray-300'
-                  } p-1`}
-                >
-                  <div
-                    className={`w-4 h-4 rounded-full ${
-                      userData.isAvailable ? 'bg-white ml-auto' : 'bg-white'
-                    }`}
-                  ></div>
-                </div>
-                <span className='ml-2 text-sm text-green-600 font-medium'>
-                  {userData.isAvailable
-                    ? 'Available for work'
-                    : 'Not available'}
-                </span>
-              </div>
-
-              <p className='mt-4 text-primary'>{userData.bio}</p>
-            </div>
-          </div>
-        </div>
+       />
 
         {/* Certificates Section */}
         <div className='bg-white rounded-lg br p-6'>
@@ -307,12 +283,12 @@ const UserProfile = () => {
           </h3>
 
           <div className='flex flex-wrap gap-3'>
-            {userData.certificates.map(cert => (
+            {userData?.certificates?.map(cert => (
               <div
-                key={cert.id}
+                key={cert?.id}
                 className='bg-primary text-white px-4 py-2 rounded-lg text-sm'
               >
-                {cert.name}
+                {cert?.name}
               </div>
             ))}
           </div>

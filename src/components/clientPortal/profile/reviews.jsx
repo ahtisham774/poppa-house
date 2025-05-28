@@ -170,7 +170,7 @@ const Reviews = ({ data }) => {
   }
 
   return (
-    <div className='bg-white rounded-lg br p-6 mb-6 flex flex-col gap-8'>
+    <div className='bg-white rounded-lg br p-3 md:p-6 mb-6 flex flex-col gap-8'>
       {/* Header */}
       <div className='flex items-center justify-between mb-6'>
         <h2 className='text-xl font-semibold flex items-center'>
@@ -218,7 +218,7 @@ const Reviews = ({ data }) => {
           {visibleReviews?.map(review => (
             <div
               key={review.id}
-              className='bg-white br rounded-lg p-6 mb-4 shadow-sm'
+              className='bg-white br rounded-lg p-3 md:p-6 mb-4 shadow-sm'
             >
               <div className='flex justify-between items-start'>
                 <div className='flex items-start'>

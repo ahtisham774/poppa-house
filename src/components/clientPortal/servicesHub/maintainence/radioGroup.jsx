@@ -26,7 +26,7 @@ const RadioGroup = ({ field, formData, onChange }) => {
   return (
     <div className={`mb-4 ${full ? 'col-span-2' : ''} `}>
       {label && (
-        <label className='block mb-2  font-medium text-[#131e47]'>
+        <label className='block mb-2 text-base font-medium text-[#131e47]'>
           {label}
         </label>
       )}
@@ -48,7 +48,7 @@ const RadioGroup = ({ field, formData, onChange }) => {
                 name={name}
                 checked={formData[name] === option.value}
                 onChange={() => handleRadioChange(option.value)}
-                className='relative mr-2 appearance-none size-4 border-2 border-[#131e47] rounded-full checked:bg-white focus:outline-none focus:ring-0 transition-colors duration-200'
+                className='relative mr-2 shrink-0 appearance-none size-4 border-2 border-[#131e47] rounded-full checked:bg-white focus:outline-none focus:ring-0 transition-colors duration-200'
                 style={{
                   backgroundImage:
                     formData[name] === option.value

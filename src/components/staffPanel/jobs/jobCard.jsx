@@ -294,7 +294,7 @@ const JobCard = ({ job, isAssigned, isHistory, onClick }) => {
               </button>
             </div>
           )}
-          <button className='flex items-center justify-center'>
+          {/* <button className='flex items-center justify-center'>
             <svg
               width='12'
               height='17'
@@ -307,7 +307,7 @@ const JobCard = ({ job, isAssigned, isHistory, onClick }) => {
                 fill='#131E47'
               />
             </svg>
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

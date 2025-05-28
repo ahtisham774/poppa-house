@@ -405,3 +405,8 @@ body {
       margin-right: 1rem !important;
     }
 
+
+
+    .expand .ant-form-item{
+      margin-bottom: 0 !important;
+    }

@@ -23,16 +23,17 @@ const staffProfileService = {
     }
   },
   async updateProfile (staffId, data) {
-    return await apiClient.put(
-      `${url}/update/${staffId}`,
-      data,
-      {
-        requireAuth: true
-      }
-    )
+    return await apiClient.put(`${url}/update/${staffId}`, data, {
+      requireAuth: true
+    })
   },
   async getStaffReviews (staffId) {
     return await apiClient.get(`${STAFF_URL}/rating_reviews/get/${staffId}`, {
+      requireAuth: true
+    })
+  },
+  async uploadDocuments (staffId, data) {
+    return await apiClient.post(`${url}/upload/documents/${staffId}`, data, {
       requireAuth: true
     })
   }

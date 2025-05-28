@@ -191,8 +191,8 @@ const JobRow = ({ job, isAssigned,isHistory, onClick }) => {
       </div>
       <div className='flex justify-between items-center mb-1'>
         {!isAssigned && !isHistory && (
-          <>
-            <div className='mt-4'>
+          <div className='flex flex-col gap-2 text-gray-500 text-sm w-full'>
+            <div className='mt-4 w-full flex items-center justify-between'>
               <span className='text-sm font-medium text-gray-700'>
                 Progress
               </span>
@@ -201,7 +201,7 @@ const JobRow = ({ job, isAssigned,isHistory, onClick }) => {
               </span>
             </div>
             <ProgressBar progress={job.progress} className='!h-1.5' />
-          </>
+          </div>
         )}
         {isAssigned && (
           <div className='flex items-center mt-4 flex-wrap  w-full gap-3 '>

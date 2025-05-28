@@ -4,6 +4,8 @@
 const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 const API_KEY = import.meta.env.VITE_CLOUDINARY_API_KEY;
+const API_SECRET = import.meta.env.VITE_CLOUDINARY_API_SECRET;
+import sha1 from 'js-sha1';
 
 if (!CLOUD_NAME || !UPLOAD_PRESET) {
   console.warn('Cloudinary configuration missing. File uploads will fail.');
@@ -117,10 +119,9 @@ const cloudinaryService = {
   },
 
   // Helper method to generate signature (you might want to do this server-side)
-  async generateSignature(publicId, timestamp) {
-    // In production, you should call your backend to generate a signature
-    console.warn('Using client-side signature generation. For production, use server-side signing.');
-    return 'simple-signature'; // Replace with actual signature generation
+ generateSignature(publicId, timestamp) {
+    const signatureStr = `public_id=${publicId}&timestamp=${timestamp}${API_SECRET}`;
+    return sha1(signatureStr);
   },
 };
 

@@ -114,7 +114,7 @@ const RegisterPage = () => {
               { required: true, message: 'Please enter your phone number' }
             ]}
           >
-            <PhoneInput placeholder='Enter phone number' />
+            <PhoneInput placeholder='Enter phone number' className='border_b' />
           </Form.Item>
         </div>
         <Form.Item

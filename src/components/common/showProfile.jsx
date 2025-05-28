@@ -23,7 +23,7 @@ const ShowProfile = ({ image, variant = 'small', custom }) => {
       className={
         custom
           ? custom
-          : `rounded-full bg-accent  flex uppercase items-center justify-center text-black font-medium ${variants[variant]}`
+          : `rounded-full bg-accent shrink-0 flex uppercase items-center justify-center text-black font-medium ${variants[variant]}`
       }
     >
       {imgSrc ? (

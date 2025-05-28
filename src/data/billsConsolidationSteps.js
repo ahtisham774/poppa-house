@@ -172,7 +172,7 @@ export const propertyInsuranceSteps = [
         required: true
       },
       {
-        name: 'constructionYear',
+        name: 'yearOfConstruction',
         label: 'Year of Property Construction',
         type: 'select',
         placeholder: 'Select the year...',

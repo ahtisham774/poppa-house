@@ -2,10 +2,10 @@ import ShowProfile from '../../common/showProfile'
 
 const Header = ({ user, handleSidebar }) => {
   return (
-    <div className='flex justify-between md:justify-end items-center  bg-white border-b p-5'>
+    <div className='flex justify-between lg:justify-end items-center  bg-white border-b p-5'>
       <button
         onClick={handleSidebar}
-        className='md:hidden p-2 text-gray-500 rounded-lg hover:bg-gray-100'
+        className='lg:hidden p-2 text-gray-500 rounded-lg hover:bg-gray-100'
       >
         <svg
           className='w-6 h-6'

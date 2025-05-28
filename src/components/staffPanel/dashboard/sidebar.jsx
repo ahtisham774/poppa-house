@@ -4,18 +4,18 @@ import { useAuth } from '../../../context/useAuth'
 import { useLogin } from '../../../hooks/useLogin'
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
- const { user } = useAuth()
- const {logout} = useLogin()
+  const { user } = useAuth()
+  const { logout } = useLogin()
   const location = useLocation()
   const role = user?.role?.toLowerCase()
   const [expandedMenus, setExpandedMenus] = useState({})
-  const [activeMenu, setActiveMenu] = useState("")
+  const [activeMenu, setActiveMenu] = useState('')
   const [isMobile, setIsMobile] = useState(false)
 
   // Initialize from localStorage and URL on component mount
   useEffect(() => {
     // Get expanded menus from localStorage
-    const savedExpandedMenus = localStorage.getItem("expandedMenus")
+    const savedExpandedMenus = localStorage.getItem('expandedMenus')
     if (savedExpandedMenus) {
       setExpandedMenus(JSON.parse(savedExpandedMenus))
     }
@@ -24,31 +24,35 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     const currentPath = location.pathname
 
     // Find which menu item matches the current path
-    const allItems = sidebarItems.flatMap((section) => section.items)
+    const allItems = sidebarItems.flatMap(section => section.items)
 
     // First check for exact matches
-    const exactMatch = allItems.find((item) => item.href === currentPath)
+    const exactMatch = allItems.find(item => item.href === currentPath)
     if (exactMatch) {
       setActiveMenu(exactMatch.menuKey)
     } else {
       // Then check for submenu matches
-      const parentWithSubMatch = allItems.find((item) =>
-        item.subItems?.some((subItem) => currentPath === subItem.href || currentPath.startsWith(subItem.href)),
+      const parentWithSubMatch = allItems.find(item =>
+        item.subItems?.some(
+          subItem =>
+            currentPath === subItem.href || currentPath.startsWith(subItem.href)
+        )
       )
 
       if (parentWithSubMatch) {
         // Find the specific submenu item
         const matchingSubItem = parentWithSubMatch.subItems.find(
-          (subItem) => currentPath === subItem.href || currentPath.startsWith(subItem.href),
+          subItem =>
+            currentPath === subItem.href || currentPath.startsWith(subItem.href)
         )
 
         if (matchingSubItem) {
           setActiveMenu(matchingSubItem.menuKey)
 
           // Ensure parent menu is expanded
-          setExpandedMenus((prev) => ({
+          setExpandedMenus(prev => ({
             ...prev,
-            [parentWithSubMatch.menuKey]: true,
+            [parentWithSubMatch.menuKey]: true
           }))
         }
       }
@@ -57,29 +61,29 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
   // Save expanded menus to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem("expandedMenus", JSON.stringify(expandedMenus))
+    localStorage.setItem('expandedMenus', JSON.stringify(expandedMenus))
   }, [expandedMenus])
 
   useEffect(() => {
     const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768)
+      setIsMobile(window.innerWidth < 950)
     }
 
     checkIfMobile()
-    window.addEventListener("resize", checkIfMobile)
+    window.addEventListener('resize', checkIfMobile)
 
-    return () => window.removeEventListener("resize", checkIfMobile)
+    return () => window.removeEventListener('resize', checkIfMobile)
   }, [])
 
-  const toggleMenu = (menu) => {
-    setExpandedMenus((prev) => ({
+  const toggleMenu = menu => {
+    setExpandedMenus(prev => ({
       ...prev,
-      [menu]: !prev[menu],
+      [menu]: !prev[menu]
     }))
   }
 
   const handleMenuClick = (menuKey, hasSubItems = false) => {
-    if(menuKey === 'logout') {
+    if (menuKey === 'logout') {
       logout()
       setActiveMenu('')
       setSidebarOpen(false)
@@ -91,13 +95,29 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   }
 
   // Check if any submenu item is active
-  const isSubItemActive = (menuKey) => {
-    const parentItem = sidebarItems.flatMap((section) => section.items).find((item) => item.menuKey === menuKey)
+  const isSubItemActive = menuKey => {
+    const parentItem = sidebarItems
+      .flatMap(section => section.items)
+      .find(item => item.menuKey === menuKey)
 
-    return parentItem?.subItems?.some((subItem) => activeMenu === subItem.menuKey)
+    return parentItem?.subItems?.some(subItem => activeMenu === subItem.menuKey)
   }
+  let baseUrl = '/'
 
-  const baseUrl = role == 'staff' ? '/staff/' : '/client/'
+  switch (role) {
+    case 'staff':
+      baseUrl = '/staff/'
+      break
+    case 'client':
+      baseUrl = '/client/'
+      break
+    case 'lister':
+      baseUrl = '/lister/'
+      break
+    default:
+      baseUrl = '/'
+      break
+  }
 
   const staffSidebarItems = [
     {
@@ -215,7 +235,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       section: 'TOOLS',
       items: [
         {
-        title: 'Help & Support',
+          title: 'Help & Support',
           menuKey: 'help',
           icon: (
             <svg
@@ -343,7 +363,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               title: 'Deals Room',
               menuKey: 'deals-room',
               href: baseUrl + 'properties-hub/' + 'deals-room'
-            },
+            }
           ]
         },
         {
@@ -492,7 +512,254 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     }
   ]
 
-  const sidebarItems = role == 'staff' ? staffSidebarItems : clientSidebarItems
+  const listerSidebarItems = [
+    {
+      section: 'GENERAL',
+      items: [
+        {
+          title: 'Dashboard',
+          menuKey: 'dashboard',
+          icon: (
+            <svg className='w-5 h-5 ' fill='currentColor' viewBox='0 0 24 24'>
+              <path d='M4 13h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1zm0 8h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1zm10 0h6a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1zm0-12h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1z' />
+            </svg>
+          ),
+          href: baseUrl + 'dashboard'
+        },
+        {
+          title: 'Listing Manager',
+          menuKey: 'listing-manager',
+          icon: (
+            <svg
+              width='24'
+              height='24'
+              viewBox='0 0 24 24'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                d='M19.903 8.586C19.8555 8.4775 19.7892 8.37829 19.707 8.293L13.707 2.293C13.6217 2.21083 13.5225 2.14447 13.414 2.097C13.384 2.083 13.352 2.075 13.32 2.064C13.2363 2.03563 13.1492 2.01848 13.061 2.013C13.04 2.011 13.021 2 13 2H6C4.897 2 4 2.897 4 4V20C4 21.103 4.897 22 6 22H18C19.103 22 20 21.103 20 20V9C20 8.979 19.989 8.96 19.987 8.938C19.9815 8.84979 19.9644 8.7627 19.936 8.679C19.9267 8.647 19.9157 8.616 19.903 8.586ZM16.586 8H14V5.414L16.586 8ZM6 20V4H12V9C12 9.26522 12.1054 9.51957 12.2929 9.70711C12.4804 9.89464 12.7348 10 13 10H18L18.002 20H6Z'
+                fill='#888888'
+              />
+              <path
+                d='M8 12H16V14H8V12ZM8 16H16V18H8V16ZM8 8H10V10H8V8Z'
+                fill='#888888'
+              />
+            </svg>
+          ),
+          href: baseUrl + 'listing-manager'
+        },
+        {
+          title: 'Viewing Request Model',
+          menuKey: 'viewing-request',
+          icon: (
+            <svg
+              width='21'
+              height='22'
+              viewBox='0 0 21 22'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <g clipPath='url(#clip0_4602_17480)'>
+                <path
+                  d='M18.375 11.1821C18.7852 11.4624 19.1509 11.7803 19.4722 12.1357C19.7935 12.4912 20.0703 12.8809 20.3027 13.3047C20.5352 13.7285 20.7061 14.1763 20.8154 14.6479C20.9248 15.1196 20.9863 15.6016 21 16.0938C21 16.9072 20.8462 17.6729 20.5386 18.3906C20.231 19.1084 19.8071 19.7339 19.2671 20.2671C18.7271 20.8003 18.1016 21.2207 17.3906 21.5283C16.6797 21.8359 15.9141 21.9932 15.0938 22C14.4717 22 13.8701 21.9077 13.2891 21.7231C12.708 21.5386 12.1748 21.272 11.6895 20.9233C11.2041 20.5747 10.7734 20.1577 10.3975 19.6724C10.0215 19.187 9.73096 18.6504 9.52588 18.0625H1.3125V2.3125H3.9375V1H5.25V2.3125H14.4375V1H15.75V2.3125H18.375V11.1821ZM2.625 3.625V6.25H17.0625V3.625H15.75V4.9375H14.4375V3.625H5.25V4.9375H3.9375V3.625H2.625ZM9.21826 16.75C9.19775 16.5381 9.1875 16.3193 9.1875 16.0938C9.1875 15.5059 9.26953 14.9351 9.43359 14.3813C9.59766 13.8276 9.84717 13.3047 10.1821 12.8125H9.1875V11.5H10.5V12.3818C10.7803 12.0332 11.0913 11.7256 11.4331 11.459C11.7749 11.1924 12.144 10.9634 12.5405 10.772C12.937 10.5806 13.3506 10.437 13.7812 10.3413C14.2119 10.2456 14.6494 10.1943 15.0938 10.1875C15.7773 10.1875 16.4336 10.3003 17.0625 10.5259V7.5625H2.625V16.75H9.21826ZM15.0938 20.6875C15.7295 20.6875 16.3242 20.5679 16.8779 20.3286C17.4316 20.0894 17.917 19.7612 18.334 19.3442C18.751 18.9272 19.0791 18.4419 19.3184 17.8882C19.5576 17.3345 19.6807 16.7363 19.6875 16.0938C19.6875 15.458 19.5679 14.8633 19.3286 14.3096C19.0894 13.7559 18.7612 13.2705 18.3442 12.8535C17.9272 12.4365 17.4419 12.1084 16.8882 11.8691C16.3345 11.6299 15.7363 11.5068 15.0938 11.5C14.458 11.5 13.8633 11.6196 13.3096 11.8589C12.7559 12.0981 12.2705 12.4263 11.8535 12.8433C11.4365 13.2603 11.1084 13.7456 10.8691 14.2993C10.6299 14.853 10.5068 15.4512 10.5 16.0938C10.5 16.7295 10.6196 17.3242 10.8589 17.8779C11.0981 18.4316 11.4263 18.917 11.8433 19.334C12.2603 19.751 12.7456 20.0791 13.2993 20.3184C13.853 20.5576 14.4512 20.6807 15.0938 20.6875ZM15.75 15.4375H17.7188V16.75H14.4375V12.8125H15.75V15.4375ZM3.9375 11.5H5.25V12.8125H3.9375V11.5ZM6.5625 11.5H7.875V12.8125H6.5625V11.5ZM6.5625 8.875H7.875V10.1875H6.5625V8.875ZM3.9375 14.125H5.25V15.4375H3.9375V14.125ZM6.5625 14.125H7.875V15.4375H6.5625V14.125ZM10.5 10.1875H9.1875V8.875H10.5V10.1875ZM13.125 10.1875H11.8125V8.875H13.125V10.1875ZM15.75 10.1875H14.4375V8.875H15.75V10.1875Z'
+                  fill='#888888'
+                />
+              </g>
+              <defs>
+                <clipPath id='clip0_4602_17480'>
+                  <rect
+                    width='21'
+                    height='21'
+                    fill='white'
+                    transform='translate(0 0.5)'
+                  />
+                </clipPath>
+              </defs>
+            </svg>
+          ),
+          href: baseUrl + 'viewing-request'
+        },
+        {
+          title: 'Negotiations Tracker',
+          menuKey: 'negotiations-tracker',
+          icon: (
+            <svg
+              width='24'
+              height='24'
+              viewBox='0 0 24 24'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                d='M3 20V19H21V20H3ZM4 17.23V12H6V17.23H4ZM8.654 17.23V7H10.654V17.23H8.654ZM13.327 17.23V10H15.327V17.23H13.327ZM18 17.23V4H20V17.23H18Z'
+                fill='#888888'
+              />
+            </svg>
+          ),
+          href: baseUrl + 'negotiations-tracker'
+        },
+        {
+          title: 'Analytics Page',
+          menuKey: 'analytics',
+          icon: (
+            <svg
+              width='19'
+              height='21'
+              viewBox='0 0 19 21'
+              
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                d='M13.9531 6.5625V7.875H16.379L9.3515 15.6423L6.67962 12.6891L2.8457 16.9266L3.68541 17.8547L6.67962 14.5452L9.3515 17.4984L17.2187 8.8031V11.4844H18.4062V6.5625H13.9531Z'
+                fill='#131E47'
+              />
+              <path
+                d='M1.78125 4.26562H0.59375V20.3438H18.4062V19.0312H1.78125V4.26562Z'
+                fill='#131E47'
+              />
+            </svg>
+          ),
+          href: baseUrl + 'analytics'
+        },
+        {
+          title: 'Commissions Tracker',
+          menuKey: 'commissions-tracker',
+          icon: (
+            <svg
+              width='24'
+              height='24'
+              viewBox='0 0 24 24'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                d='M16 6C16 4.114 16 3.172 15.414 2.586C14.828 2 13.886 2 12 2C10.114 2 9.172 2 8.586 2.586C8 3.172 8 4.114 8 6M2 14C2 10.229 2 8.343 3.172 7.172C4.344 6.001 6.229 6 10 6H14C17.771 6 19.657 6 20.828 7.172C21.999 8.344 22 10.229 22 14C22 17.771 22 19.657 20.828 20.828C19.656 21.999 17.771 22 14 22H10C6.229 22 4.343 22 3.172 20.828C2.001 19.656 2 17.771 2 14Z'
+                stroke='#888888'
+                strokeWidth='1.5'
+              />
+              <path
+                d='M12 17.333C13.105 17.333 14 16.587 14 15.667C14 14.747 13.105 14 12 14C10.895 14 10 13.254 10 12.333C10 11.413 10.895 10.667 12 10.667M12 17.333C10.895 17.333 10 16.587 10 15.667M12 17.333V18M12 10.667V10M12 10.667C13.105 10.667 14 11.413 14 12.333'
+                stroke='#888888'
+                strokeWidth='1.5'
+                strokeLinecap='round'
+              />
+            </svg>
+          ),
+          href: baseUrl + 'commissions-tracker'
+        },
+        {
+          title: 'Messaging Hub',
+          menuKey: 'messaging-hub',
+          icon: (
+            <svg
+              width='25'
+              height='26'
+              viewBox='0 0 25 26'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                d='M3.125 21.6354V5.70833C3.125 5.1558 3.34449 4.62589 3.73519 4.23519C4.12589 3.84449 4.6558 3.625 5.20833 3.625H19.7917C20.3442 3.625 20.8741 3.84449 21.2648 4.23519C21.6555 4.62589 21.875 5.1558 21.875 5.70833V16.125C21.875 16.6775 21.6555 17.2074 21.2648 17.5981C20.8741 17.9888 20.3442 18.2083 19.7917 18.2083H8.29271C7.98045 18.2084 7.6722 18.2786 7.39074 18.4138C7.10929 18.5491 6.86183 18.7458 6.66667 18.9896L4.23854 22.025C4.15774 22.1263 4.04746 22.1999 3.92296 22.2358C3.79846 22.2716 3.66589 22.2679 3.5436 22.2251C3.42131 22.1823 3.31534 22.1026 3.24035 21.997C3.16536 21.8913 3.12505 21.765 3.125 21.6354Z'
+                stroke='#888888'
+                strokeWidth='2'
+              />
+            </svg>
+          ),
+          href: baseUrl + 'messaging-hub'
+        },
+        {
+          title: 'Profile',
+          menuKey: 'profile',
+          icon: (
+            <svg
+              width='24'
+              height='24'
+              viewBox='0 0 24 24'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                d='M12 4C13.0609 4 14.0783 4.42143 14.8284 5.17157C15.5786 5.92172 16 6.93913 16 8C16 9.06087 15.5786 10.0783 14.8284 10.8284C14.0783 11.5786 13.0609 12 12 12C10.9391 12 9.92172 11.5786 9.17157 10.8284C8.42143 10.0783 8 9.06087 8 8C8 6.93913 8.42143 5.92172 9.17157 5.17157C9.92172 4.42143 10.9391 4 12 4ZM12 6C11.4696 6 10.9609 6.21071 10.5858 6.58579C10.2107 6.96086 10 7.46957 10 8C10 8.53043 10.2107 9.03914 10.5858 9.41421C10.9609 9.78929 11.4696 10 12 10C12.5304 10 13.0391 9.78929 13.4142 9.41421C13.7893 9.03914 14 8.53043 14 8C14 7.46957 13.7893 6.96086 13.4142 6.58579C13.0391 6.21071 12.5304 6 12 6ZM12 13C14.67 13 20 14.33 20 17V20H4V17C4 14.33 9.33 13 12 13ZM12 14.9C9.03 14.9 5.9 16.36 5.9 17V18.1H18.1V17C18.1 16.36 14.97 14.9 12 14.9Z'
+                fill='#888888'
+              />
+            </svg>
+          ),
+          href: baseUrl + 'profile'
+        }
+      ]
+    },
+    {
+      section: 'TOOLS',
+      items: [
+        {
+          title: 'Help & Support',
+          menuKey: 'support',
+          icon: (
+            <svg
+              width='24'
+              height='24'
+              viewBox='0 0 24 24'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                d='M12 17H12.01M12 14C12.8906 12.0938 15 12.2344 15 10C15 8.5 14 7 12 7C10.4521 7 9.50325 7.89844 9.15332 9M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z'
+                stroke='#888888'
+                strokeWidth='1.4'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            </svg>
+          ),
+          href: baseUrl + 'support'
+        },
+
+        {
+          title: 'Log Out',
+          menuKey: 'logout',
+
+          icon: (
+            <svg
+              width='20'
+              height='20'
+              viewBox='0 0 20 20'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                d='M5.85292 4.58464C4.51057 5.47545 3.49075 6.77482 2.94442 8.2904C2.39809 9.80597 2.3543 11.4572 2.81952 12.9996C3.28475 14.542 4.23427 15.8936 5.52751 16.8543C6.82075 17.815 8.38896 18.3338 10 18.3338C11.611 18.3338 13.1793 17.815 14.4725 16.8543C15.7657 15.8936 16.7153 14.542 17.1805 12.9996C17.6457 11.4572 17.6019 9.80597 17.0556 8.2904C16.5093 6.77482 15.4894 5.47545 14.1471 4.58464M10.0004 1.66797V8.33464'
+                stroke='#888888'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            </svg>
+          ),
+          onClick: () => {
+            logout()
+          }
+        }
+      ]
+    }
+  ]
+
+  let sidebarItems = []
+  switch (role) {
+    case 'staff':
+      sidebarItems = staffSidebarItems
+      break
+    case 'client':
+      sidebarItems = clientSidebarItems
+      break
+    case 'lister':
+      sidebarItems = listerSidebarItems
+      break
+    default:
+      sidebarItems = []
+      break
+  }
 
   return (
     <>
@@ -572,7 +839,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                           }}
                         >
                           <div className='flex items-center gap-3'>
-                            {item.icon}
+                            <span className='size-5 '>{item.icon}</span>
                             {item.title}
                           </div>
                           <svg
@@ -621,7 +888,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                             : 'text-[#888888] hover:bg-gray-100'
                         }`}
                       >
-                        {item.icon}
+                          <span className='size-5 '>{item.icon}</span>
                         {item.title}
                       </Link>
                     )}

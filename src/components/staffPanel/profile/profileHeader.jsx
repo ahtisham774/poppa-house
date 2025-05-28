@@ -6,6 +6,8 @@ const ProfileHeader = ({
   title,
   available,
   bio,
+  allow_update_profile,
+  allow_update_availability,
   avatar,
   handleUpdateAvailability,
   handleSubmit
@@ -30,8 +32,8 @@ const ProfileHeader = ({
 
   return (
     <>
-      <div className='bg-white p-6 rounded-lg shadow border border-gray-100 mb-6'>
-        <div className='flex flex-col md:flex-row items-start md:items-center'>
+      <div className='bg-white p-3 md:p-6 rounded-lg shadow border border-gray-100 mb-6'>
+        <div className='flex flex-col md:flex-row items-center'>
           <div className='relative mb-4 md:mb-0 md:mr-6'>
             {avatar ? (
               <img
@@ -45,7 +47,9 @@ const ProfileHeader = ({
               </div>
             )}
 
-            <button
+           {
+           allow_update_profile &&
+           <button
               onClick={() => {
                 setOpenUpdateProfileModal(true)
               }}
@@ -64,7 +68,7 @@ const ProfileHeader = ({
                   d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z'
                 />
               </svg>
-            </button>
+            </button>}
           </div>
           <div className='flex-1'>
             <h2 className='text-2xl font-semibold text-gray-900 mb-1'>
@@ -77,7 +81,7 @@ const ProfileHeader = ({
                 className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out ${
                   isAvailable ? 'bg-green-400' : 'bg-gray-400'
                 }`}
-                onClick={handleAvailabilityChange}
+                onClick={allow_update_availability ? handleAvailabilityChange : null}
               >
                 <div
                   className={`bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ease-in-out ${

@@ -83,7 +83,7 @@ useEffect(() => {
   }
 
   return (
-    <div className='p-6'>
+    <div className='p-3 md:p-6'>
       {/* Header */}
       <div className='flex justify-between items-center mb-6'>
         <div>
@@ -158,8 +158,8 @@ useEffect(() => {
       />
 
       {/* Tabs */}
-      <div className='bg-white rounded-lg  border-2 border-[#b1b1b171]  mb-6 p-3 overflow-x-auto'>
-        <div className='flex'>
+      <div className='bg-white rounded-lg  border-2 border-[#b1b1b171] flex items-center gap-3  mb-6 p-3 snap-mandatory overflow-x-auto'>
+     
           <ProfileTab
             isActive={activeTab === 'edit'}
             onClick={() => handleTabChange('edit')}
@@ -220,13 +220,13 @@ useEffect(() => {
             }
             label='Ratings & reviews'
           />
-        </div>
+        
       </div>
 
       {/* Tab Content */}
       <div>
         {activeTab === 'edit' && <EditProfileForm userData={staffProfile} />}
-        {activeTab === 'verifications' && <VerificationsTab />}
+        {activeTab === 'verifications' && <VerificationsTab uploadedDocuments={staffProfile?.verificationDocuments}/>}
         {activeTab === 'ratings' && <Reviews data={null} />}
       </div>
     </div>
